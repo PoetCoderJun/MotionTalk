@@ -1,0 +1,4 @@
+interface:
+  display_name: "课程视频 MG 制作"
+  short_description: "为精剪课程视频规划、制作并合成叙事驱动的 MG 动画"
+  default_prompt: "Use $producing-course-video-mg to plan and produce narration-driven MG for my cleaned course video and final SRT."

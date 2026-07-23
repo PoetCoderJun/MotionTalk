@@ -1,0 +1,20 @@
+.DS_Store
+
+# Local dependencies and renderer caches
+node_modules/
+.remotion/
+
+# Local working outputs and private course materials
+mg-output/
+*.mp4
+*.mov
+*.mkv
+*.wav
+*.mp3
+*.srt
+
+# Local environment and credentials
+.env
+.env.*
+*.pem
+*.key
