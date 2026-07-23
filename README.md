@@ -11,6 +11,13 @@
 
 适合需要在口播原画面、录屏和 MG 之间自动规划切换，并保留说话者人像圆窗的访谈、讲解、教程和知识类视频。
 
+## 成片示例
+
+<p align="center">
+  <img src="assets/readme/l00-mg-workbench.jpg" alt="L00 成片：口播人像圆窗与工作台 MG" width="49%">
+  <img src="assets/readme/l00-mg-harness.jpg" alt="L00 成片：口播人像圆窗与 Harness MG" width="49%">
+</p>
+
 ## 安装
 
 把下面的 GitHub 地址直接发给 Kimi、Codex 或其他支持 Skills 的 Agent，让它代为安装：
