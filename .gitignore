@@ -4,7 +4,7 @@
 node_modules/
 .remotion/
 
-# Local working outputs and private course materials
+# Local working outputs and private video materials
 mg-output/
 *.mp4
 *.mov
