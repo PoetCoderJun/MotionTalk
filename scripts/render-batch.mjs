@@ -12,11 +12,11 @@ const usage = `Usage:
   node scripts/render-batch.mjs package [composition-id ...]
 
 Options:
-  --concurrency=<number|percent>  Default: 75%
   --help                         Show this help
 
 The entry point is bundled once and one browser is reused for every render in
-the batch. Preview is opt-in; the normal path renders final segments directly.`;
+the batch. Concurrency is fixed at 75%. Preview is opt-in; the normal path
+renders final segments directly.`;
 
 const rawArgs = process.argv.slice(2);
 if (rawArgs.includes('--help') || rawArgs.includes('-h')) {
@@ -36,9 +36,11 @@ if (!profile) {
   process.exit(2);
 }
 
-const concurrencyArg = rawArgs.find((arg) => arg.startsWith('--concurrency='));
-const concurrency = concurrencyArg?.slice('--concurrency='.length) || '75%';
-const requestedIds = rawArgs.slice(1).filter((arg) => !arg.startsWith('--'));
+if (rawArgs.some((arg) => arg === '--concurrency' || arg.startsWith('--concurrency='))) {
+  throw new Error('Concurrency is fixed at 75%; remove the --concurrency option.');
+}
+const concurrency = '75%';
+const requestedIds = rawArgs.slice(1);
 
 const here = dirname(fileURLToPath(import.meta.url));
 const remotionRoot = resolve(here, '..');

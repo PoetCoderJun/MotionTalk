@@ -1,6 +1,6 @@
 # 阶段 2：Remotion 制作与正式片段
 
-前提：导演脚本和 placement plan 已明确批准。本阶段直接生成正式 MG 片段并完成抽帧检查，不默认渲染一整套低清预览。
+前提：导演脚本和 placement plan 已明确批准，且每个 MG cue 都有已批准的 `semantic_invariants`。旧计划缺少该字段时退回阶段 1 补齐并重新批准。本阶段直接生成正式 MG 片段并完成画面与语义抽帧检查，不默认渲染一整套低清预览。
 
 ## 1. 环境和工程
 
@@ -40,17 +40,19 @@ node scripts/render-batch.mjs segment
 
 macOS 使用 H.264 VideoToolbox：`hardwareAcceleration: "required"`，正式片段 16M；禁止 CRF、encoding max rate/buffer 和 x264 preset。Linux/WSL 未单独验证硬编时使用软件编码，并在 README 标明。
 
-VideoToolbox只加速编码，不会跳过 Chromium 的 CSS/SVG/React 逐帧绘制。默认并发 75%；用一个含 SVG、文本、视频层的 20–40 秒代表 cue 实测 50%/75%/100%，选择最快且无内存压力、掉帧或浏览器崩溃的值，记录到 `remotion/README.md`。`npx remotion gpu` 只诊断绘制后端，未经对比不要强制 `--gl`。
+VideoToolbox只加速编码，不会跳过 Chromium 的 CSS/SVG/React 逐帧绘制。并发固定为 75%，不做 50%/75%/100% benchmark，也不按项目动态调参。`npx remotion gpu` 只诊断绘制后端，未经明确故障排查不要强制 `--gl`。
 
 macOS 正式批量制作前，先渲染一个代表 cue；日志必须确认 `h264_videotoolbox` 且 `hardware accelerated: true`，否则停止。
 
-## 3. 抽帧门禁
+## 3. 画面与语义抽帧门禁
 
 低清预览不是默认交付，因为它仍要让 Chromium 执行每一帧动画，常常与正式渲染耗时接近，等于把所有 cue 绘制两遍。
 
 1. 直接批量渲染 1920×1080、16M 正式 MG。
-2. 用 FFmpeg 从每个正式片段抽 4–6 帧：开头、各节拍点、结尾前 1 秒，生成拼贴检查表。
-3. 逐张检查重叠、错位、出界、死时间和文字；有问题只重渲受影响的 cue。
-4. 完成一轮修正，记录正式片段和检查表路径，然后结束阶段 2。
+2. 用 FFmpeg 从每个正式片段抽帧：开头、各视觉节拍、结尾前 1 秒，以及每条 `semantic_invariants[].proof_moment` 对应的证据帧；同一帧可同时证明多条验收点。
+3. 先检查画面质量：重叠、错位、出界、死时间、文字和安全区。
+4. 再把证据帧与批准版 `semantic_invariants` 逐条对照：画面必须直接支持 `assertion`，且没有出现任何 `forbidden`。不能用“整体意思差不多”“也算一种分叉”或“导演脚本不是施工图”替代逐条证明。
+5. 写入 `semantic-checklist.v1.json`：每条记录包含 `cue_id/invariant_id/evidence_frame/evidence_time_seconds/status/notes`。只有全部记录为 `passed`，该 cue 才能通过；无法仅凭静态帧判断节奏或状态先后时，只对该 cue 生成动态预览再判定。
+6. 任一画面项或语义项失败，只修改并重渲受影响的 cue，然后重新生成它的检查表和语义清单。全部通过后，记录正式片段、检查表与 `semantic-checklist.v1.json` 路径，结束阶段 2。
 
-只有两类情况才按需运行 `node scripts/render-batch.mjs preview <cue-id...>`：用户明确要求动态预览，或某个 cue 的节奏/视频层同步无法靠关键帧判断。不得默认预览全部 cue。
+只有两类情况才按需运行 `node scripts/render-batch.mjs preview <cue-id...>`：用户明确要求动态预览，或某个 cue 的语义顺序、节奏或视频层同步无法靠关键帧判断。不得默认预览全部 cue。
