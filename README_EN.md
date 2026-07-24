@@ -2,20 +2,16 @@
 
 # MotionTalk
 
-Turn an edited talking-head video into a polished motion-graphics video with one Agent Skill. The installed compatibility command remains `$talking-mg-video`.
+Turn an edited talking video into a polished motion-graphics video with one Agent Skill.
 
-<p align="center">
-  <img src="assets/readme/motiontalk-before-after.svg" alt="The same spoken passage before and after MotionTalk motion graphics" width="100%">
-</p>
-
-<p align="center"><sub>A real timeline-matched comparison: raw talking head on the left, MotionTalk output on the right.</sub></p>
+![MotionTalk: talking video to packaged motion graphics](assets/readme/motiontalk-cover.png)
 
 ## One Skill for visual decisions and production
 
 - Keeps the presenter when human presence matters.
 - Adds motion graphics when concepts need visualization.
 - Switches to synchronized screen recordings for real operations.
-- Delivers a fully captioned and visually packaged final video.
+- Delivers a packaged video with chapters, captions, progress, task masks, and visual polish.
 
 You do not need to prepare a storyboard or specify every effect. MotionTalk reads the complete video and decides whether each moment belongs with the presenter, the real screen, or motion graphics.
 
@@ -23,44 +19,55 @@ You do not need to prepare a storyboard or specify every effect. MotionTalk read
 
 | Input | Required | Contract |
 | --- | --- | --- |
-| Edited talking-head video | Yes | The only source of timeline, meaning, and final audio |
+| Edited talking video | Yes | The only source of timeline, meaning, and final audio |
 | Final SRT | Yes | Must match the edited video timeline exactly |
-| Synchronized screen recording | No | Starts at `00:00` and matches the video length |
+| Synchronized screen recording | No | Starts at `00:00` and matches the talking video length |
 
-The output is a fully captioned and packaged final video. MotionTalk does not run ASR, remove mistakes or pauses, or recut the source video.
+The output is a fully captioned and visually packaged final video. MotionTalk does not run ASR, remove mistakes or pauses, or recut the source video.
 
 ## Two modes
 
-### Single video: presenter ↔ motion graphics
+### Single video: talking video ↔ motion graphics
 
-For knowledge videos, opinion pieces, course explainers, and interview clips. MotionTalk controls the rhythm between the original talking head and motion graphics; no screen recording is required.
+For knowledge videos, opinion pieces, course explainers, and interview clips. MotionTalk controls the rhythm between the original talking video and motion graphics; no screen recording is required.
 
-### Dual video: presenter ↔ screen ↔ motion graphics
+### Dual video: talking video ↔ screen ↔ motion graphics
 
 For software tutorials, product demos, and workflow breakdowns. MotionTalk protects real on-screen operations first, then decides when to return to the presenter or explain an abstract relationship with motion graphics.
+
+## Complete packaged-video frames
+
+Every image below preserves the complete video frame, including chapters, captions, progress, task masks, presenter framing, and player state.
+
+<p align="center">
+  <img src="assets/readme/cover-source/01-talking-video.png" alt="Complete frame: talking video, chapter, captions, and progress bar" width="49%">
+  <img src="assets/readme/cover-source/02-agent-execution.png" alt="Complete frame: Agent execution, task mask, captions, and progress bar" width="49%">
+  <img src="assets/readme/cover-source/03-motion-graphics.png" alt="Complete frame: MG, chapter, captions, presenter, and progress bar" width="49%">
+  <img src="assets/readme/cover-source/04-packaged-video.png" alt="Complete frame: packaged video, chapter, captions, presenter, and progress bar" width="49%">
+</p>
 
 ## Install
 
 Use the standard Skills CLI:
 
 ```bash
-npx skills add PoetCoderJun/talking-mg-video
+npx skills add PoetCoderJun/MotionTalk
 ```
 
 Or send the repository URL to Codex, Kimi, or another Agent that supports Skills:
 
 ```text
 Please install MotionTalk:
-https://github.com/PoetCoderJun/talking-mg-video
+https://github.com/PoetCoderJun/MotionTalk
 ```
 
 ## Use
 
-Talking-head video only:
+Talking video only:
 
 ```text
-Use $talking-mg-video with:
-- video: /data/talking-head.mp4
+Use $motiontalk with:
+- video: /data/talking-video.mp4
 - subtitles: /data/final.srt
 - output_dir: /work/mg/output
 ```
@@ -68,8 +75,8 @@ Use $talking-mg-video with:
 With a synchronized screen recording:
 
 ```text
-Use $talking-mg-video with:
-- video: /data/talking-head.mp4
+Use $motiontalk with:
+- video: /data/talking-video.mp4
 - screen_video: /data/screen-recording.mp4
 - subtitles: /data/final.srt
 - output_dir: /work/mg/output
@@ -77,11 +84,18 @@ Use $talking-mg-video with:
 
 ### No SRT yet?
 
-First use a separate transcription capability to generate and verify the final SRT for the edited video. Then run MotionTalk. The source video must already be fully edited.
+First use a separate transcription capability to generate and verify the final SRT for the edited talking video. Then run MotionTalk.
 
-## More output frames
+```text
+I do not have an SRT yet.
+First use an available independent AI transcription capability
+to generate /data/final.srt for /data/talking-video.mp4.
+Verify that it matches the video timeline, then use $motiontalk with:
+- video: /data/talking-video.mp4
+- subtitles: /data/final.srt
+- output_dir: /work/mg/output
+```
 
-<p align="center">
-  <img src="assets/readme/l00-mg-workbench.jpg" alt="Presenter portrait window with a motion-graphics workbench" width="49%">
-  <img src="assets/readme/l00-mg-harness.jpg" alt="Presenter portrait window with a Harness motion-graphics scene" width="49%">
-</p>
+## Repository boundary
+
+This repository distributes Skill instructions and presentation assets only. It contains no executable JavaScript, TypeScript, Python, or shell source. MotionTalk creates any required Remotion project and temporary batch-rendering entry point inside the user-provided `output_dir`.
