@@ -1,3 +1,5 @@
+[简体中文](README.md) | [English](README_EN.md)
+
 # talking-mg-video
 
 ## 我只有一条口播视频，怎么一句话做出“百万博主同款”动画特效？
