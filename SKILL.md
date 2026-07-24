@@ -1,9 +1,9 @@
 ---
-name: talking-mg-video
-description: Use when an already-cut selfie talking-head or spoken video and its final matching SRT need MG animation or smooth switching among presenter, synchronized screen recording, and MG.
+name: motiontalk
+description: Use when an already-cut talking video and its final matching SRT need MG animation or smooth switching among presenter, synchronized screen recording, and MG.
 ---
 
-# Talking MG Video
+# MotionTalk
 
 这是精剪完成后的口播视频 MG 后期工作流。它不做 ASR、不生成 SRT、不删口误或停顿，也不重新剪辑。最终 SRT 必须与精剪视频时间线完全匹配。
 

@@ -26,17 +26,13 @@ npx remotion browser ensure
 
 ## 2. 一次 bundle、一次 browser
 
-不要对每个 cue 调一次 `npx remotion render`。把本 Skill 的 `scripts/render-batch.mjs` 复制到项目 `remotion/scripts/`，所有同规格 cue 在一个 Node 进程中顺序渲染：
+本 Skill 仓库不分发可执行代码。制作时只允许在 `output_dir/remotion/` 内临时创建项目专用的批量渲染入口；所有同规格 cue 在一个 Node 进程中顺序渲染：
 
 - `bundle()` 只调用一次；
 - `openBrowser()` 只调用一次，并把同一个 `puppeteerInstance` 传给 `selectComposition()` 和每次 `renderMedia()`；
 - 一个 batch 内顺序 render，禁止同时启动多个 Remotion render 进程。
 
-正式制作只运行：
-
-```bash
-node scripts/render-batch.mjs segment
-```
+临时入口至少支持 `preview`、`segment`、`package` 三种 profile；正式制作只运行 `segment`。它属于项目中间产物，不能写回或复制到 Skill 仓库。
 
 macOS 使用 H.264 VideoToolbox：`hardwareAcceleration: "required"`，正式片段 16M；禁止 CRF、encoding max rate/buffer 和 x264 preset。Linux/WSL 未单独验证硬编时使用软件编码，并在 README 标明。
 
@@ -55,4 +51,4 @@ macOS 正式批量制作前，先渲染一个代表 cue；日志必须确认 `h2
 5. 写入 `semantic-checklist.v1.json`：每条记录包含 `cue_id/invariant_id/evidence_frame/evidence_time_seconds/status/notes`。只有全部记录为 `passed`，该 cue 才能通过；无法仅凭静态帧判断节奏或状态先后时，只对该 cue 生成动态预览再判定。
 6. 任一画面项或语义项失败，只修改并重渲受影响的 cue，然后重新生成它的检查表和语义清单。全部通过后，记录正式片段、检查表与 `semantic-checklist.v1.json` 路径，结束阶段 2。
 
-只有两类情况才按需运行 `node scripts/render-batch.mjs preview <cue-id...>`：用户明确要求动态预览，或某个 cue 的语义顺序、节奏或视频层同步无法靠关键帧判断。不得默认预览全部 cue。
+只有两类情况才按需运行临时批量入口的 `preview <cue-id...>` profile：用户明确要求动态预览，或某个 cue 的语义顺序、节奏或视频层同步无法靠关键帧判断。不得默认预览全部 cue。

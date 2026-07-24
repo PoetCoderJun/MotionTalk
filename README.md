@@ -1,12 +1,16 @@
 [简体中文](README.md) | [English](README_EN.md)
 
-# talking-mg-video
+# MotionTalk
 
-## 我只有一条口播视频，怎么一句话做出“百万博主同款”动画特效？
+把已经精剪的 talking video 交给一个 Agent Skill，自动完成 MG 分镜、录屏切换、字幕和视觉包装。
+
+![MotionTalk：从 talking video 到完整 MG 成片](assets/readme/motiontalk-cover.png)
+
+## 输入一条 talking video，自动得到完整 MG 成片
 
 我只有一条已经剪好的口播视频，但从头到尾只是对着镜头讲，光讲未免太单调：重点一闪而过，步骤只能靠嘴说，抽象概念还得让观众自己脑补。
 
-你只需要把已经剪好的口播视频和匹配字幕交给 `talking-mg-video`，后面的画面设计和制作都由 Agent 负责。它会读完整条内容，自己判断什么时候保留你本人、什么时候用动画讲清楚、双视频时什么时候切到录屏；你不用先想分镜，也不用指定每个特效。
+你只需要把已经剪好的口播视频和匹配字幕交给 `motiontalk`，后面的画面设计和制作都由 Agent 负责。它会读完整条内容，自己判断什么时候保留你本人、什么时候用动画讲清楚、双视频时什么时候切到录屏；你不用先想分镜，也不用指定每个特效。
 
 不用学 AE，也不用自己一帧一帧做特效。Agent 会把一条普通口播，直接做成重点清楚、节奏更快、让人更愿意看下去的“百万博主同款”动画视频。
 
@@ -27,8 +31,10 @@
 ## 成片示例
 
 <p align="center">
-  <img src="assets/readme/l00-mg-workbench.jpg" alt="L00 成片：口播人像圆窗与工作台 MG" width="49%">
-  <img src="assets/readme/l00-mg-harness.jpg" alt="L00 成片：口播人像圆窗与 Harness MG" width="49%">
+  <img src="assets/readme/cover-source/01-talking-video.png" alt="完整画面：talking video、章节、字幕与进度条" width="49%">
+  <img src="assets/readme/cover-source/02-agent-execution.png" alt="完整画面：Agent 执行、任务蒙版、字幕与进度条" width="49%">
+  <img src="assets/readme/cover-source/03-motion-graphics.png" alt="完整画面：MG、章节、字幕、人物与进度条" width="49%">
+  <img src="assets/readme/cover-source/04-packaged-video.png" alt="完整画面：包装成片、章节、字幕、人物与进度条" width="49%">
 </p>
 
 ## 安装
@@ -37,7 +43,7 @@
 
 ```text
 请帮我安装这个 Skill：
-https://github.com/PoetCoderJun/talking-mg-video
+https://github.com/PoetCoderJun/MotionTalk
 ```
 
 ## 使用方法
@@ -45,8 +51,8 @@ https://github.com/PoetCoderJun/talking-mg-video
 普通模式：
 
 ```text
-使用 $talking-mg-video 处理：
-- video: /data/talking-head.mp4
+使用 $motiontalk 处理：
+- video: /data/talking-video.mp4
 - subtitles: /data/final.srt
 - output_dir: /work/mg/output
 ```
@@ -54,8 +60,8 @@ https://github.com/PoetCoderJun/talking-mg-video
 双视频模式：
 
 ```text
-使用 $talking-mg-video 处理：
-- video: /data/talking-head.mp4
+使用 $motiontalk 处理：
+- video: /data/talking-video.mp4
 - screen_video: /data/screen-recording.mp4
 - subtitles: /data/final.srt
 - output_dir: /work/mg/output
@@ -65,16 +71,16 @@ https://github.com/PoetCoderJun/talking-mg-video
 
 ### 没有 SRT 怎么办？
 
-`talking-mg-video` 必须输入最终 SRT，而且这个 Skill 本身不包含 ASR 或 SRT 制作能力。如果没有 SRT，先让 AI 使用独立的语音转写能力为精剪视频生成对应的 SRT；生成并校验完成后，再把 SRT 路径传给本 Skill 开始制作 MG。
+`motiontalk` 必须输入最终 SRT，而且这个 Skill 本身不包含 ASR 或 SRT 制作能力。如果没有 SRT，先让 AI 使用独立的语音转写能力为精剪视频生成对应的 SRT；生成并校验完成后，再把 SRT 路径传给本 Skill 开始制作 MG。
 
 可以直接这样告诉 AI：
 
 ```text
 我还没有 SRT。
 请先使用你可用的独立 AI 语音转写能力，
-为 /data/talking-head.mp4 生成与视频时间线匹配的 /data/final.srt。
-完成并校验字幕后，再使用 $talking-mg-video 处理：
-- video: /data/talking-head.mp4
+为 /data/talking-video.mp4 生成与视频时间线匹配的 /data/final.srt。
+完成并校验字幕后，再使用 $motiontalk 处理：
+- video: /data/talking-video.mp4
 - subtitles: /data/final.srt
 - output_dir: /work/mg/output
 ```
