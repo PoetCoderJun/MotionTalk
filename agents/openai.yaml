@@ -1,4 +1,4 @@
 interface:
-  display_name: "口播视频 MG 制作"
-  short_description: "为精剪口播视频规划、制作并合成叙事驱动的 MG 动画"
-  default_prompt: "Use $producing-talking-head-video-mg to add narration-driven MG to my edited talking-head video and final SRT."
+  display_name: "Talking MG Video"
+  short_description: "把自拍口播、录屏和 MG 自动编排成带字幕的可交付成片"
+  default_prompt: "Use $talking-mg-video to turn my edited talking-head video into a narration-driven MG video, generating an SRT first if I do not provide one."
