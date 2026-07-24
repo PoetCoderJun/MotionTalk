@@ -2,7 +2,7 @@
 
 # MotionTalk
 
-Turn an edited talking video into a polished motion-graphics video with one Agent Skill.
+Give MotionTalk one edited selfie talking video and its matching subtitles. If you also recorded the screen while explaining, add the synchronized screen recording. MotionTalk automatically decides when to keep you on screen, show the real operation, or use MG to explain an abstract idea—then delivers a fancy, top-creator-style video with chapters, captions, progress, and task masks.
 
 ![MotionTalk: talking video to packaged motion graphics](assets/readme/motiontalk-cover.png)
 

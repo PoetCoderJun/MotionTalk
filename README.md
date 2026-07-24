@@ -2,7 +2,7 @@
 
 # MotionTalk
 
-把精剪 talking video 自动升级成带 MG 动画、字幕包装和录屏切换的成片。
+输入一条已经精剪好的口播自拍视频和匹配字幕；如果你同时录了讲解操作，也可以再上传一条从 `00:00` 同步的录屏。MotionTalk 会自动判断什么时候保留你本人、什么时候切到真实操作、什么时候用 MG 把抽象概念讲清楚，最后生成一条带章节、字幕、进度条和任务蒙版的“百万博主同款” fancy 动画视频。
 
 ![MotionTalk：从 talking video 到完整 MG 成片](assets/readme/motiontalk-cover.png)
 
