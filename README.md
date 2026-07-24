@@ -1,48 +1,62 @@
 [简体中文](README.md) | [English](README_EN.md)
 
-# talking-mg-video
+# MotionTalk
 
-## 我只有一条口播视频，怎么一句话做出“百万博主同款”动画特效？
-
-我只有一条已经剪好的口播视频，但从头到尾只是对着镜头讲，光讲未免太单调：重点一闪而过，步骤只能靠嘴说，抽象概念还得让观众自己脑补。
-
-你只需要把已经剪好的口播视频和匹配字幕交给 `talking-mg-video`，后面的画面设计和制作都由 Agent 负责。它会读完整条内容，自己判断什么时候保留你本人、什么时候用动画讲清楚、双视频时什么时候切到录屏；你不用先想分镜，也不用指定每个特效。
-
-不用学 AE，也不用自己一帧一帧做特效。Agent 会把一条普通口播，直接做成重点清楚、节奏更快、让人更愿意看下去的“百万博主同款”动画视频。
-
-## 使用场景
-
-### 普通模式：一支自拍口播，也能拥有 MG 分镜
-
-适合知识分享、观点表达、课程讲解、访谈切片等已经精剪完成的自拍口播视频。AI 根据每段口播的含义设计对应的 MG 分镜动画，并在“自拍原画面 ↔ MG”之间安排节奏，不需要另外准备录屏。
-
-### 双视频模式：录屏 + 自拍 + MG，自动丝滑切镜
-
-适合软件教程、产品演示、工作流拆解和带操作过程的课程视频。提供从 `00:00` 同步且等长的录屏与自拍口播后，AI 会判断什么时候应该看真实操作、什么时候应该回到讲述者、什么时候应该用 MG 解释抽象关系，并在“录屏 ↔ 自拍 ↔ MG”之间自动规划切换。
-
-两种模式都必须输入与精剪视频时间线匹配的最终 SRT。
-
-最终视频只交付完成字幕与视觉包装的成片，不额外交付干净母版。制作过程中如需干净合成中间片，仅临时保存在工作目录，成片验收通过后删除。
-
-## 成片示例
+把精剪口播自动升级成带 MG 动画、字幕包装和录屏切换的成片。它是一套 Agent Skill；安装后的兼容调用名仍是 `$talking-mg-video`。
 
 <p align="center">
-  <img src="assets/readme/l00-mg-workbench.jpg" alt="L00 成片：口播人像圆窗与工作台 MG" width="49%">
-  <img src="assets/readme/l00-mg-harness.jpg" alt="L00 成片：口播人像圆窗与 Harness MG" width="49%">
+  <img src="assets/readme/motiontalk-before-after.svg" alt="同一句口播的原始相机画面与 MotionTalk MG 成片对照" width="100%">
 </p>
+
+<p align="center"><sub>真实同时间轴对照：左侧为原始口播，右侧为 MotionTalk 成片。</sub></p>
+
+## 一套 Skill，完成画面判断与制作
+
+- 需要建立信任和保持人物表达时，保留讲述者。
+- 抽象概念需要看懂时，加入 MG 动画。
+- 真实操作更重要时，切换到同步录屏。
+- 最终交付带字幕与视觉包装的完整成片。
+
+你不需要先写分镜，也不需要指定每一个特效。MotionTalk 会读完整条内容，根据语义和真实操作判断画面应该留在人、切到屏幕，还是交给 MG。
+
+## 输入 → 输出
+
+| 输入 | 必需 | 说明 |
+| --- | --- | --- |
+| 精剪口播视频 | 是 | 唯一时间线、语义和最终音频依据 |
+| 最终 SRT | 是 | 必须与精剪视频时间线完全匹配 |
+| 同步录屏 | 否 | 从 `00:00` 开始、与口播等长 |
+
+输出是一条完成字幕与视觉包装的成片。MotionTalk 不做 ASR、不删口误或停顿，也不重新剪辑。
+
+## 两种模式
+
+### 单视频：口播 ↔ MG
+
+适合知识分享、观点表达、课程讲解和访谈切片。MotionTalk 在原始口播与 MG 之间安排节奏，不需要录屏。
+
+### 双视频：口播 ↔ 录屏 ↔ MG
+
+适合软件教程、产品演示和工作流拆解。MotionTalk 会优先保护真实操作，再决定何时回到讲述者、何时用 MG 解释抽象关系。
 
 ## 安装
 
-把下面的 GitHub 地址直接发给 Kimi、Codex 或其他支持 Skills 的 Agent，让它代为安装：
+使用通用 Skills CLI：
+
+```bash
+npx skills add PoetCoderJun/talking-mg-video
+```
+
+也可以把仓库地址直接交给 Codex、Kimi 或其他支持 Skills 的 Agent：
 
 ```text
-请帮我安装这个 Skill：
+请帮我安装 MotionTalk：
 https://github.com/PoetCoderJun/talking-mg-video
 ```
 
-## 使用方法
+## 使用
 
-普通模式：
+只有口播视频：
 
 ```text
 使用 $talking-mg-video 处理：
@@ -51,7 +65,7 @@ https://github.com/PoetCoderJun/talking-mg-video
 - output_dir: /work/mg/output
 ```
 
-双视频模式：
+同时有同步录屏：
 
 ```text
 使用 $talking-mg-video 处理：
@@ -61,22 +75,13 @@ https://github.com/PoetCoderJun/talking-mg-video
 - output_dir: /work/mg/output
 ```
 
-只有一支自拍视频，就使用普通模式；如果同时拍了录屏和自拍，就使用双视频模式，让 AI 在录屏、自拍和 MG 动画之间自动规划丝滑切换。
+### 还没有 SRT？
 
-### 没有 SRT 怎么办？
+请先使用独立语音转写能力，为精剪视频生成并校验最终 SRT，再运行 MotionTalk。输入视频仍需已经精剪完成。
 
-`talking-mg-video` 必须输入最终 SRT，而且这个 Skill 本身不包含 ASR 或 SRT 制作能力。如果没有 SRT，先让 AI 使用独立的语音转写能力为精剪视频生成对应的 SRT；生成并校验完成后，再把 SRT 路径传给本 Skill 开始制作 MG。
+## 更多成片画面
 
-可以直接这样告诉 AI：
-
-```text
-我还没有 SRT。
-请先使用你可用的独立 AI 语音转写能力，
-为 /data/talking-head.mp4 生成与视频时间线匹配的 /data/final.srt。
-完成并校验字幕后，再使用 $talking-mg-video 处理：
-- video: /data/talking-head.mp4
-- subtitles: /data/final.srt
-- output_dir: /work/mg/output
-```
-
-输入口播视频必须已经精剪完成；本 Skill 不负责删除口误、停顿或重新剪辑。提供的 SRT 必须与最终视频时间线一致。双视频模式下，录屏必须从 `00:00` 与口播视频同步且等长。
+<p align="center">
+  <img src="assets/readme/l00-mg-workbench.jpg" alt="口播人像圆窗与工作台 MG" width="49%">
+  <img src="assets/readme/l00-mg-harness.jpg" alt="口播人像圆窗与 Harness MG" width="49%">
+</p>
