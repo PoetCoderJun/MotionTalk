@@ -1,4 +1,4 @@
 interface:
   display_name: "Talking MG Video"
   short_description: "把自拍口播、录屏和 MG 自动编排成带字幕的可交付成片"
-  default_prompt: "Use $talking-mg-video to turn my edited talking-head video into a narration-driven MG video, generating an SRT first if I do not provide one."
+  default_prompt: "Use $talking-mg-video with my edited talking-head video and its final matching SRT to create a narration-driven MG video."

@@ -1,39 +1,49 @@
 ---
 name: talking-mg-video
-description: Use when an already-cut selfie talking-head or spoken video needs MG animation or smooth switching among presenter, synchronized screen recording, and MG, whether or not a matching SRT already exists.
+description: Use when an already-cut selfie talking-head or spoken video and its final matching SRT need MG animation or smooth switching among presenter, synchronized screen recording, and MG.
 ---
 
 # Talking MG Video
 
 ## 核心边界
 
-这是一个 AI 驱动的口播视频 MG 后期工作流，不使用 OBS，也不负责删除口误、停顿或重新精剪口播。SRT 是可选输入：如果没有与成片时间线匹配的 SRT，必须先用 AI 为精剪后口播视频生成对应的 SRT，再进入 MG 规划。
+这是一个 AI 驱动的口播视频 MG 后期工作流，不使用 OBS，也不负责 ASR、生成 SRT、删除口误、删除停顿或重新精剪口播。与精剪视频时间线匹配的最终 SRT 是必填输入。
 
 支持两种输入模式：
 
 - **普通模式（单视频）**：一支精剪后、保留最终主音频的自拍口播视频；根据口播内容生成对应的 MG 分镜动画，并规划“自拍口播原画面 ↔ MG”的切换；
 - **双视频模式**：上述自拍口播视频 + 一支从 `00:00` 同步且等长的录屏；根据语义自动规划“录屏 ↔ 自拍口播 ↔ MG”的丝滑切换。
 
-两种模式都可额外提供与精剪视频时间线匹配的最终 SRT；未提供时先用 AI 自动生成。
+两种模式都必须提供与精剪视频时间线匹配的最终 SRT。
 
 此外必须指定一个明确的输出目录。
 
 **所有口播理解、字幕核对、MG 节拍和最终主音频只能参考口播视频。录屏音频只用于同步抽查，最终必须静音或丢弃。**
 
-- 无 SRT 时只运行 AI 转写来生成与当前精剪时间线一致的字幕，不得借机执行 `delete → polish`、删除停顿或改变口播时间线；
-- MG 点位只根据已验收的工作 SRT 判断，不根据原片粗略时间码判断；
+- 本 Skill 从“精剪视频 + 最终 SRT 已就绪”开始，不包含任何语音转写模型、ASR 命令或 SRT 生成逻辑；
+- MG 点位只根据输入的最终 SRT 判断，不根据原片粗略时间码判断；
 - 先交付并确认 MG 导演脚本；未经明确确认，不制作 MG、不合成最终成片。
+
+### 没有 SRT 时的前置编排
+
+用户没有 SRT 时，不要直接进入本 Skill 的 MG 工作流。调用方必须：
+
+1. 先使用本 Skill 之外的独立 AI 语音转写能力，为精剪后的 `video` 生成与当前时间线对应的 SRT；
+2. 检查字幕格式、内容和时间码，确保它已经成为可用的最终 SRT；
+3. 再把生成的文件路径作为 `subtitles` 输入，调用本 Skill。
+
+这只是调用前的路由规则，不代表本 Skill 提供 SRT 制作能力。不得在本 Skill 的工程、脚本或输出目录中实现或宣称 ASR / SRT 生成。
 
 ## 独立运行与依赖
 
 本 Skill 不依赖任何预先存在的仓库、目录结构或历史工程。调用时始终需要：
 
 - `video`：精剪后的口播视频；
+- `subtitles`：与精剪视频时间线匹配的最终 SRT；
 - `output_dir`：全部中间产物与交付物的独立输出目录。
 
-可选输入：
+双视频模式额外接受：
 
-- `subtitles`（可选）：与视频匹配的最终 SRT；缺省时使用 AI 从 `video` 生成；
 - `screen_video`：双视频模式使用、与口播视频从 `00:00` 同步且等长的录屏。
 
 项目标识 `project_id` 从 `video` 的文件名自动推导：取不含扩展名的文件名并规范化为小写连字符格式。禁止要求用户额外提供项目名。输入和输出可以位于任意本地路径；禁止假设存在任何既有工作区、素材目录或预置 Remotion 项目。
@@ -45,8 +55,6 @@ description: Use when an already-cut selfie talking-head or spoken video needs M
 - Node.js `>=20` 与 npm；已验证版本为 Node `24.15.0`、npm `11.12.1`；
 - FFmpeg 与 ffprobe `>=6`，且构建中包含 `libx264`、`overlay`、`fade`、`crop`、`scale`、`geq`；已验证版本为 `7.1`；
 - 项目内安装的 Remotion `4.0.419`、React/React DOM `19.2.3`、TypeScript `5.6.3`。
-
-没有输入 SRT 时，还必须有可用的 AI 语音转写能力，能够从 `video` 的主音轨输出带时间码的 SRT。可以使用当前环境中可用的本地 ASR 模型、视频转写 Skill 或云端 AI 转写服务；不得伪造字幕或只用无时间码的纯文本代替。云端转写可能需要网络，本地模型则可以离线运行。
 
 ### 性能与硬件编码策略
 
@@ -90,7 +98,7 @@ Remotion 必须通过项目内二进制调用，例如 `npx remotion studio src/
 npx remotion browser ensure
 ```
 
-依赖、浏览器和输入 SRT 就绪后，本工作流可以离线运行；若需要临时调用云端 AI 生成 SRT，则该转写步骤需要网络。
+依赖和浏览器就绪后，本工作流本身可以离线运行。
 
 开始前运行：
 
@@ -124,26 +132,21 @@ macOS 上还必须用一个 20–40 秒代表性 cue 做一次正式渲染前的
 
 每个视频项目使用用户指定的独立 `output_dir`：
 
-- `subtitles/`：无输入 SRT 时保存 AI 生成的 `<project_id>.generated.srt`；有输入 SRT 时不复制或改写原文件。
 - `MG导演脚本.md`：人读的导演脚本；`mg-placement-plan.v1.json`：机器读的合成依据（cue id、起止秒、人像策略），时间轴 = 精剪后视频的秒。
 - `remotion/`：Remotion 工程。`src/specs.ts` 定义 composition id 与时长；`src/Root.tsx` 注册；`src/scenes.tsx` / `src/components.tsx` / `src/theme.ts` 是场景与设计系统；`src/Package.tsx` 是打包层。
 - `segments/` 1080p MG 片段，`previews/` 低清预览，`final/` 交付物。
 
-## 第 1 步：检查输入并准备 SRT
+## 第 1 步：检查输入
 
-1. 记录口播视频、可选 SRT、可选录屏和输出目录；从口播视频文件名推导 `project_id`，并据此判断普通模式或双视频模式。
-2. 用媒体探测工具检查视频的可解码性、分辨率、帧率、时长和音轨。
-3. 准备唯一的工作 SRT：
-   - 已提供 `subtitles`：检查格式、内容和时间范围，不改写原文件，直接把它作为工作 SRT；
-   - 未提供 `subtitles`：先用可用的 AI 语音转写能力读取 `video` 的最终主音轨，生成 `output_dir/subtitles/<project_id>.generated.srt`，再把生成文件作为工作 SRT；
-   - AI 生成字幕必须使用标准 SRT 序号和 `HH:MM:SS,mmm --> HH:MM:SS,mmm` 时间码；只允许修正明显错字和断句，不得删改口播内容、压缩停顿、翻译或改变视频时间线。
-4. 完整检查工作 SRT：序号连续、时间码递增且不重叠、最后一条字幕不超过视频时长；结合开头、中段、结尾音频抽查对齐。出现系统性错字、术语无法判断或持续时间漂移时停止，不得带病进入 MG 规划。
-5. 若有录屏，在开头、中段和结尾抽查同步与等长；发现持续漂移就停止，不在 MG 阶段补救。
-6. 不改写输入视频、用户提供的 SRT 或既有剪辑时间线；所有新生成的中间产物进入 `output_dir`。
+1. 记录口播视频、最终 SRT、可选录屏和输出目录；从口播视频文件名推导 `project_id`，并据此判断普通模式或双视频模式。
+2. 用媒体探测工具检查视频的可解码性、分辨率、帧率、时长和音轨；确认 SRT 时间范围落在视频内。
+3. 完整检查最终 SRT：序号连续、时间码递增且不重叠、最后一条字幕不超过视频时长；结合开头、中段、结尾音频抽查对齐。出现系统性错字、术语无法判断或持续时间漂移时停止，不得带病进入 MG 规划。
+4. 若有录屏，在开头、中段和结尾抽查同步与等长；发现持续漂移就停止，不在 MG 阶段补救。
+5. 不改写输入视频、最终 SRT 或既有剪辑时间线；所有中间产物进入 `output_dir`。
 
 ## 第 2 步：冻结输入时间线
 
-从这里开始，把工作 SRT 和视频时间线标记为 final。后续所有章节、MG 点位和画面切换都同时记录最终字幕 ID 范围、字幕原文、最终入点和出点。若之后又删除或恢复口播内容，当前导演脚本立即失效，必须重新映射和确认。
+从这里开始，把输入 SRT 和视频时间线标记为 final。后续所有章节、MG 点位和画面切换都同时记录最终字幕 ID 范围、字幕原文、最终入点和出点。若之后又删除或恢复口播内容，当前导演脚本立即失效，必须重新映射和确认。
 
 ## 第 3 步：按语义切成大段
 
@@ -243,7 +246,7 @@ MG 的质量来自大胆和自由发挥，不来自规则：
 
 ### 数据流
 
-1. 解析已冻结的工作 SRT → `captions: [{start, end, text}]`（剪辑后时间轴秒）；章节表 `topics: [{title, start, end}]`（边界行 ID 查 SRT 换算成秒；补剪后同步重映射；标题以用户修订为准）。
+1. 解析已冻结的输入 SRT → `captions: [{start, end, text}]`（剪辑后时间轴秒）；章节表 `topics: [{title, start, end}]`（边界行 ID 查 SRT 换算成秒；补剪后同步重映射；标题以用户修订为准）。
 2. 生成 `src/package-props.json`：`{src, captions, topics, durationInFrames}`，`durationInFrames = ceil(母版时长 × 30)`；母版实体拷贝到 `remotion/public/`（Remotion 打 bundle 不跟随 symlink）。
 3. 注册 composition：1920×1080@30fps，defaultProps = package-props.json。
 4. macOS 渲染：
@@ -272,12 +275,11 @@ MG 的质量来自大胆和自由发挥，不来自规则：
 5. 双视频模式还要确认录屏始终同步、录屏音频未进入混音、关键操作未被 MG 或圆窗遮挡。
 6. macOS 性能校验：保存每次 Remotion 渲染日志；低清预览、1080p MG 片段和打包版都必须可在日志中确认 `h264_videotoolbox`。若使用 FFmpeg 合成，保存完整命令，确认包含 `-c:v h264_videotoolbox`。仅用 `ffprobe` 看到 `h264` 不足以证明使用了硬件编码。
 
-交付：批准版 MG 导演脚本与 placement plan、MG 源码与独立片段、连续预览、干净母版、打包版，以及最终采用的工作 SRT（用户原始文件或 AI 生成文件）。口播视频、可选录屏和用户提供的 SRT 保持不变。
+交付：批准版 MG 导演脚本与 placement plan、MG 源码与独立片段、连续预览、干净母版、打包版和输入 SRT。口播视频、可选录屏与 SRT 保持不变。
 
 ## 必须停止的情况
 
-- 输入视频、主音轨或 `output_dir` 不可用；
-- 未提供 SRT，且当前环境无法用 AI 成功生成与视频对齐的 SRT；
+- 输入视频、主音轨、最终 SRT 或 `output_dir` 不可用；
 - 双视频模式的录屏未真正同步或时长不一致；
 - 输入仍需删除口播、重剪视频或重映射字幕；
 - 最终字幕仍有系统性错误或时间漂移；
