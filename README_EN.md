@@ -22,6 +22,8 @@ Use this mode for software tutorials, product demos, workflow breakdowns, and le
 
 Both modes require a final SRT that matches the timeline of the edited video.
 
+The only final video deliverable is the fully captioned and packaged cut. Any clean composite needed during production remains a temporary working file and is deleted after the packaged cut passes validation.
+
 ## Example frames
 
 <p align="center">

@@ -33,4 +33,4 @@ description: Use when an already-cut selfie talking-head or spoken video and its
 - 没有最终 SRT、输入不可解码、录屏持续漂移或仍需重剪时停止。
 - 所有中间产物只写入 `output_dir`；不修改输入视频、SRT 或录屏。
 - MG 与录屏窗口期间，人像默认常驻右下角；真实屏幕操作对全屏 MG 有否决权。
-- 交付默认包含干净母版和包装成片；主音频始终只来自 `video`。
+- 最终视频只交付包装成片，不交付或长期保留干净母版。若包装链路需要干净合成中间片，只能写入 `output_dir/work/`，包装版验收通过后删除；主音频始终只来自 `video`。

@@ -2,16 +2,17 @@
 
 前提：正式 MG 片段已渲染并通过抽帧检查。
 
-## 1. 合成架构：保留短 MG + FFmpeg clean master
+## 1. 合成架构：保留短 MG + FFmpeg 临时干净合成片
 
-**不要为了“统一”改成全 Remotion。** VideoToolbox只加速编码；Remotion 仍需 Chromium 抓取每一帧。若同时交付 clean master 和包装版，全 Remotion 会把全片浏览器渲染跑两遍。
+**不要为了“统一”改成全 Remotion。** VideoToolbox只加速编码；Remotion 仍需 Chromium 抓取每一帧。包装成片只需一次全片浏览器渲染就会非常慢，因此默认使用短 MG + FFmpeg 的混合架构。
 
 默认混合架构：
 
 1. Remotion 只绘制真正有动画的短 MG cue；
-2. FFmpeg 一次生成 clean master，并从口播视频复制主音频；
+2. FFmpeg 在 `output_dir/work/` 一次生成临时干净合成片，并从口播视频复制主音频；
 3. Remotion 一次生成每章一张透明包装静帧；
-4. FFmpeg 按章节给 clean master 合成静态包装、动态进度条和字幕，再无损拼接章节并复制主音频。
+4. FFmpeg 按章节给临时干净合成片叠加静态包装、动态进度条和字幕，再无损拼接章节并复制主音频；
+5. 包装版完整验收通过后，删除临时干净合成片。不得把它移入 `final/`、列入交付清单或以“备份”为由长期保留。
 
 FFmpeg 合成不得把 1920×1080 底片转为整片 RGBA，也不得让每帧串行穿过所有 cue 的 overlay 链。按完整时间线切成互斥 segment：
 
@@ -40,13 +41,13 @@ macOS CPU 完成 overlay/crop/mask，输出编码用：
 
 ## 2. 快速包装层
 
-输出 clean master 后，生成 `package-props.json`：
+输出临时干净合成片后，生成 `package-props.json`：
 
 ```json
-{"src":"<master-name>","captions":[],"topics":[],"durationInFrames":0}
+{"src":"<temporary-composite-name>","captions":[],"topics":[],"durationInFrames":0}
 ```
 
-`durationInFrames = ceil(ffprobe母版时长 × 30)`。保留完整包装 composition 作为视觉规格和回退入口，但默认不要让 Chromium 逐帧读取整条母版。
+`durationInFrames = ceil(ffprobe临时合成片时长 × 30)`。保留完整包装 composition 作为视觉规格和回退入口，但默认不要让 Chromium 逐帧读取整条临时合成片。
 
 给包装 composition 增加 `overlayOnly` 模式：背景透明，不含 `OffthreadVideo`、字幕和动态进度填充。一次 bundle、一次 browser，在每个章节起始帧各渲染一张透明 PNG。FFmpeg 对每章执行：
 
@@ -54,7 +55,7 @@ macOS CPU 完成 overlay/crop/mask，输出编码用：
 2. 用时间表达式绘制当前章节的动态进度填充；
 3. 用 ASS 写字幕，并显式控制中英文混排行宽，不能依赖播放器自动换行；
 4. 每章以同一 VideoToolbox 参数编码，concat demuxer `-c copy` 拼接；
-5. 从 clean master `-c:a copy` 封入原音频。
+5. 从临时干净合成片 `-c:a copy` 封入原音频。
 
 这条路径只让 Chromium 渲染“章节数”张静帧，而不是全片数万帧。只有包装本身存在必须逐帧由 React/CSS/SVG 计算、且 FFmpeg 无法等价表达的动画时，才回退到完整 Remotion 包装。
 
@@ -70,10 +71,10 @@ macOS CPU 完成 overlay/crop/mask，输出编码用：
 
 ## 3. 验收
 
-1. `ffprobe`：clean master、包装版时长与输入一致；帧率、分辨率、音轨正确。
-2. `ffmpeg -v error -i <file> -f null -`：完整解码无错误。
+1. 包装前用 `ffprobe` 确认临时干净合成片与输入时长一致，帧率、分辨率、音轨正确。
+2. 对包装版执行 `ffprobe` 和 `ffmpeg -v error -i <file> -f null -`：时长与输入一致，帧率、分辨率、音轨正确，完整解码无错误。
 3. 每个 MG/录屏窗口内至少抽 1 帧，边界前后抽帧，纯人像段抽帧；确认无黑帧、圆窗正确、切换干净、包装只有一套。
 4. 音频全程连续且只来自口播；双视频确认录屏同步、无录屏音频、关键操作无遮挡。
 5. 保存 Remotion 和 FFmpeg 完整日志。FFprobe 只显示 H.264 不能证明硬编；日志必须出现真实编码器证据。
 
-交付批准版导演脚本与 placement plan、Remotion 源码、独立 MG、连续预览、clean master、包装版和输入 SRT。输入媒体保持不变。
+最终视频只交付包装版。另交付批准版导演脚本与 placement plan、Remotion 源码、独立 MG、连续预览和输入 SRT；输入媒体保持不变。包装版验收通过后删除 `work/` 中的临时干净合成片，并确认 `final/` 中不存在 `clean-master`、`clean-composite` 或其他未包装的全片视频。
