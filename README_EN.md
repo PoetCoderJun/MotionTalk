@@ -6,28 +6,38 @@ Turn an edited talking video into a polished motion-graphics video with one Agen
 
 ![MotionTalk: talking video to packaged motion graphics](assets/readme/motiontalk-cover.png)
 
-- Keeps the presenter when human presence matters
-- Adds MG when concepts need visualization
-- Switches to synchronized screen recordings for real operations
-- Delivers a fully captioned and packaged final video
+## One Skill for visual decisions and production
 
-Give the edited talking video and its matching subtitles to `motiontalk`. The Agent reads the full content, decides when to keep the presenter, when motion graphics explain an idea better, and—when a screen recording is available—when to show the real interface. You do not need to prepare a storyboard or specify every effect.
+- Keeps the presenter when human presence matters.
+- Adds motion graphics when concepts need visualization.
+- Switches to synchronized screen recordings for real operations.
+- Delivers a packaged video with chapters, captions, progress, task masks, and visual polish.
 
-## Use cases
+You do not need to prepare a storyboard or specify every effect. MotionTalk reads the complete video and decides whether each moment belongs with the presenter, the real screen, or motion graphics.
 
-### Standard mode: one selfie video with content-aware MG storyboards
+## Input → output
 
-Use this mode for already-edited talking videos such as knowledge sharing, opinion pieces, course explainers, and interview clips. AI designs motion-graphics scenes from the meaning of each passage and controls the rhythm between the original talking video and MG animation. No screen recording is required.
+| Input | Required | Contract |
+| --- | --- | --- |
+| Edited talking video | Yes | The only source of timeline, meaning, and final audio |
+| Final SRT | Yes | Must match the edited video timeline exactly |
+| Synchronized screen recording | No | Starts at `00:00` and matches the talking video length |
 
-### Dual-video mode: smooth switching between screen recording, selfie, and MG
+The output is a fully captioned and visually packaged final video. MotionTalk does not run ASR, remove mistakes or pauses, or recut the source video.
 
-Use this mode for software tutorials, product demos, workflow breakdowns, and lessons that include on-screen operations. Provide an equal-length screen recording and talking video synchronized from `00:00`. AI decides when viewers should see the real operation, return to the presenter, or switch to MG for an abstract explanation, then plans the transitions between all three sources.
+## Two modes
 
-Both modes require a final SRT that matches the timeline of the edited video.
+### Single video: talking video ↔ motion graphics
 
-The only final video deliverable is the fully captioned and packaged cut. Any clean composite needed during production remains a temporary working file and is deleted after the packaged cut passes validation.
+For knowledge videos, opinion pieces, course explainers, and interview clips. MotionTalk controls the rhythm between the original talking video and motion graphics; no screen recording is required.
 
-## Example frames
+### Dual video: talking video ↔ screen ↔ motion graphics
+
+For software tutorials, product demos, and workflow breakdowns. MotionTalk protects real on-screen operations first, then decides when to return to the presenter or explain an abstract relationship with motion graphics.
+
+## Complete packaged-video frames
+
+Every image below preserves the complete video frame, including chapters, captions, progress, task masks, presenter framing, and player state.
 
 <p align="center">
   <img src="assets/readme/cover-source/01-talking-video.png" alt="Complete frame: talking video, chapter, captions, and progress bar" width="49%">
@@ -36,18 +46,24 @@ The only final video deliverable is the fully captioned and packaged cut. Any cl
   <img src="assets/readme/cover-source/04-packaged-video.png" alt="Complete frame: packaged video, chapter, captions, presenter, and progress bar" width="49%">
 </p>
 
-## Installation
+## Install
 
-Send the following GitHub URL to Codex, Kimi, or another Agent that supports Skills:
+Use the standard Skills CLI:
+
+```bash
+npx skills add PoetCoderJun/MotionTalk
+```
+
+Or send the repository URL to Codex, Kimi, or another Agent that supports Skills:
 
 ```text
-Please install this Skill:
+Please install MotionTalk:
 https://github.com/PoetCoderJun/MotionTalk
 ```
 
-## Usage
+## Use
 
-Standard mode:
+Talking video only:
 
 ```text
 Use $motiontalk with:
@@ -56,7 +72,7 @@ Use $motiontalk with:
 - output_dir: /work/mg/output
 ```
 
-Dual-video mode:
+With a synchronized screen recording:
 
 ```text
 Use $motiontalk with:
@@ -66,13 +82,9 @@ Use $motiontalk with:
 - output_dir: /work/mg/output
 ```
 
-Use standard mode when you only have a talking video. If you recorded both your screen and yourself, use dual-video mode so AI can plan smooth switching between the screen recording, talking video, and MG animation.
+### No SRT yet?
 
-### What if I do not have an SRT?
-
-`motiontalk` requires a final SRT. This Skill does not include ASR or subtitle-generation capabilities. If you do not have an SRT, first ask AI to use an independent speech-transcription capability to generate one that matches the edited video. After the subtitles have been generated and verified, pass the SRT path to this Skill.
-
-You can tell the Agent:
+First use a separate transcription capability to generate and verify the final SRT for the edited talking video. Then run MotionTalk.
 
 ```text
 I do not have an SRT yet.
@@ -84,4 +96,6 @@ Verify that it matches the video timeline, then use $motiontalk with:
 - output_dir: /work/mg/output
 ```
 
-The talking video must already be fully edited; this Skill does not remove mistakes, pauses, or repeated takes. The SRT must match the final video timeline. In dual-video mode, the screen recording must be equal in length and synchronized with the talking video from `00:00`.
+## Repository boundary
+
+This repository distributes Skill instructions and presentation assets only. It contains no executable JavaScript, TypeScript, Python, or shell source. MotionTalk creates any required Remotion project and temporary batch-rendering entry point inside the user-provided `output_dir`.
