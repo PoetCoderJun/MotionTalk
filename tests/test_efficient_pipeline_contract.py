@@ -8,6 +8,29 @@ SKILL_ROOT = Path(__file__).resolve().parents[1]
 
 
 class EfficientPipelineContractTests(unittest.TestCase):
+    def test_skill_supports_talking_video_and_mg_only(self):
+        checked = (
+            "README.md",
+            "README_EN.md",
+            "SKILL.md",
+            "references/01-plan.md",
+            "references/02-build.md",
+            "references/03-deliver.md",
+            "agents/openai.yaml",
+        )
+        forbidden = (
+            "screen_video",
+            "screen recording",
+            "synchronized screen",
+            "录屏",
+            "双视频",
+            "screen_windows",
+        )
+        for relative in checked:
+            text = (SKILL_ROOT / relative).read_text(encoding="utf-8").lower()
+            for token in forbidden:
+                self.assertNotIn(token.lower(), text, f"{relative}: {token}")
+
     def test_bundled_pipeline_scripts_exist_and_have_help(self):
         scripts = (
             "build_and_package.py",

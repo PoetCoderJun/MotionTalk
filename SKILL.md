@@ -1,6 +1,6 @@
 ---
 name: motiontalk
-description: Use when an already-cut talking video and its final matching SRT need MG animation or smooth switching among presenter, synchronized screen recording, and MG.
+description: Use when an already-cut talking video and its final matching SRT need MG animation or smooth switching between the presenter and MG.
 ---
 
 # MotionTalk
@@ -11,10 +11,9 @@ description: Use when an already-cut talking video and its final matching SRT ne
 
 - `video`：保留最终主音频的精剪口播视频；
 - `subtitles`：与 `video` 匹配的最终 SRT；
-- `output_dir`：独立输出目录；
-- 可选 `screen_video`：从 `00:00` 与口播同步且等长的录屏。
+- `output_dir`：独立输出目录。
 
-从 `video` 文件名推导小写连字符格式的 `project_id`，不要再向用户索取项目名。口播视频是时间线、语义和最终音频的唯一依据；录屏音频只用于同步抽查，交付时必须丢弃。
+从 `video` 文件名推导小写连字符格式的 `project_id`，不要再向用户索取项目名。口播视频是时间线、语义和最终音频的唯一依据。
 
 ## 阶段路由
 
@@ -47,11 +46,11 @@ description: Use when an already-cut talking video and its final matching SRT ne
 
 ## 不可跨越的边界
 
-- 没有最终 SRT、输入不可解码、录屏持续漂移或仍需重剪时停止。
-- 所有中间产物只写入 `output_dir`；不修改输入视频、SRT 或录屏。
+- 没有最终 SRT、输入不可解码或仍需重剪时停止。
+- 所有中间产物只写入 `output_dir`；不修改输入视频或 SRT。
 - 不生成单独的预览视频、低清整片或 `*-preview.mp4`。需要判断画面时直接检查正式 MG 片段、正式包装成片和证据帧，不为验收重复编码同一内容。
 - 抽帧验收既检查画面质量，也必须用证据帧逐条证明批准版语义约束；语义未通过不得进入整片合成。
-- MG 与录屏窗口期间，人像默认常驻右下角；真实屏幕操作对全屏 MG 有否决权。
-- 任何人像底、圆窗、方窗或录屏画中画在 `scale` 前都必须先裁成目标宽高比，或使用 `force_original_aspect_ratio`；禁止把非目标比例画面直接拉伸到固定宽高。抽帧验收必须把变换前后的人脸比例并排检查。
+- MG 窗口期间，人像默认常驻右下角。
+- 任何人像底、圆窗或方窗在 `scale` 前都必须先裁成目标宽高比，或使用 `force_original_aspect_ratio`；禁止把非目标比例画面直接拉伸到固定宽高。抽帧验收必须把变换前后的人脸比例并排检查。
 - 最终视频只交付包装成片，不交付或长期保留干净母版。若包装链路需要干净合成中间片，只能写入 `output_dir/work/`，包装版验收通过后删除；主音频始终只来自 `video`。
 - 交付前必须完成连续制作与交付阶段的最终质量门禁并写出 `quality-report.v1.json`；任何必检项不是 `passed` 都不得宣称完成。
