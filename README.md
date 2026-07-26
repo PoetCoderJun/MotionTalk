@@ -25,6 +25,8 @@
 
 输出是一条完成字幕与视觉包装的成片。MotionTalk 不做 ASR、不删口误或停顿，也不重新剪辑。
 
+导演脚本只需批准一次；批准后 MotionTalk 会在一次连续执行中完成正式 MG、整片合成、包装、质量门禁和最终交付，不再要求第二次“继续交付”确认。
+
 ## 两种模式
 
 ### 单视频：talking video ↔ MG
@@ -96,6 +98,8 @@ https://github.com/PoetCoderJun/MotionTalk
 - output_dir: /work/mg/output
 ```
 
-## 仓库边界
+## 高效执行链路
 
-本仓库只分发 Skill 说明与展示素材，不携带 JavaScript、TypeScript、Python 或 Shell 执行代码。制作过程中需要的 Remotion 工程和临时批量渲染入口只创建在用户指定的 `output_dir` 内。
+本仓库随 Skill 固化分发批量 MG 渲染、章节静帧、单次整片包装和质量门禁脚本，不再为每个视频临时重写执行入口。Remotion 视觉工程仍创建在用户指定的 `output_dir` 内。
+
+最终包装固定输出 60fps。成片前还可执行一次防划走节奏检查；需要时用 1.15× 统一提速，字幕、音频、章节和带文字进度条会同步重映射，并融入唯一一次整片包装编码。

@@ -25,6 +25,8 @@ You do not need to prepare a storyboard or specify every effect. MotionTalk read
 
 The output is a fully captioned and visually packaged final video. MotionTalk does not run ASR, remove mistakes or pauses, or recut the source video.
 
+The director plan is approved once. After approval, MotionTalk continuously renders the final MG, composites and packages the full video, runs the quality gates, and delivers the result without asking for another “continue delivery” confirmation.
+
 ## Two modes
 
 ### Single video: talking video ↔ motion graphics
@@ -96,6 +98,8 @@ Verify that it matches the video timeline, then use $motiontalk with:
 - output_dir: /work/mg/output
 ```
 
-## Repository boundary
+## Efficient execution path
 
-This repository distributes Skill instructions and presentation assets only. It contains no executable JavaScript, TypeScript, Python, or shell source. MotionTalk creates any required Remotion project and temporary batch-rendering entry point inside the user-provided `output_dir`.
+This Skill ships reusable scripts for batched MG rendering, chapter overlays, one-pass full-video packaging, and final quality gates, so each project does not rewrite its own execution entry point. The project-specific Remotion visual source still lives inside the user-provided `output_dir`.
+
+Final packaging stays at 60fps. An optional anti-swipe pacing check can apply a 1.15× global speed-up while retiming audio, captions, chapters, and labeled progress together inside the single full-video packaging encode.
