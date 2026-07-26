@@ -4,8 +4,6 @@
 
 Give MotionTalk one edited selfie talking video and its matching subtitles. MotionTalk automatically decides when to keep you on screen or use MG to explain an abstract idea—then delivers a fancy, top-creator-style video with chapters, captions, progress, and task masks.
 
-![MotionTalk: talking video to packaged motion graphics](assets/readme/motiontalk-cover.png)
-
 ## One Skill for visual decisions and production
 
 - Keeps the presenter when human presence matters.

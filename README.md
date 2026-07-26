@@ -4,8 +4,6 @@
 
 输入一条已经精剪好的口播自拍视频和匹配字幕。MotionTalk 会自动判断什么时候保留你本人、什么时候用 MG 把抽象概念讲清楚，最后生成一条带章节、字幕、进度条和任务蒙版的“百万博主同款” fancy 动画视频。
 
-![MotionTalk：从 talking video 到完整 MG 成片](assets/readme/motiontalk-cover.png)
-
 ## 一套 Skill，完成画面判断与制作
 
 - 需要建立信任和保持人物表达时，保留讲述者。
