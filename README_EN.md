@@ -2,7 +2,7 @@
 
 # MotionTalk
 
-Give MotionTalk one edited selfie talking video and its matching subtitles. If you also recorded the screen while explaining, add the synchronized screen recording. MotionTalk automatically decides when to keep you on screen, show the real operation, or use MG to explain an abstract idea—then delivers a fancy, top-creator-style video with chapters, captions, progress, and task masks.
+Give MotionTalk one edited selfie talking video and its matching subtitles. MotionTalk automatically decides when to keep you on screen or use MG to explain an abstract idea—then delivers a fancy, top-creator-style video with chapters, captions, progress, and task masks.
 
 ![MotionTalk: talking video to packaged motion graphics](assets/readme/motiontalk-cover.png)
 
@@ -10,10 +10,9 @@ Give MotionTalk one edited selfie talking video and its matching subtitles. If y
 
 - Keeps the presenter when human presence matters.
 - Adds motion graphics when concepts need visualization.
-- Switches to synchronized screen recordings for real operations.
 - Delivers a packaged video with chapters, captions, progress, task masks, and visual polish.
 
-You do not need to prepare a storyboard or specify every effect. MotionTalk reads the complete video and decides whether each moment belongs with the presenter, the real screen, or motion graphics.
+You do not need to prepare a storyboard or specify every effect. MotionTalk reads the complete video and decides whether each moment belongs with the presenter or motion graphics.
 
 ## Input → output
 
@@ -21,19 +20,14 @@ You do not need to prepare a storyboard or specify every effect. MotionTalk read
 | --- | --- | --- |
 | Edited talking video | Yes | The only source of timeline, meaning, and final audio |
 | Final SRT | Yes | Must match the edited video timeline exactly |
-| Synchronized screen recording | No | Starts at `00:00` and matches the talking video length |
 
 The output is a fully captioned and visually packaged final video. MotionTalk does not run ASR, remove mistakes or pauses, or recut the source video.
 
-## Two modes
+The director plan is approved once. After approval, MotionTalk continuously renders the final MG, composites and packages the full video, runs the quality gates, and delivers the result without asking for another “continue delivery” confirmation.
 
-### Single video: talking video ↔ motion graphics
+## Visual rhythm: talking video ↔ motion graphics
 
-For knowledge videos, opinion pieces, course explainers, and interview clips. MotionTalk controls the rhythm between the original talking video and motion graphics; no screen recording is required.
-
-### Dual video: talking video ↔ screen ↔ motion graphics
-
-For software tutorials, product demos, and workflow breakdowns. MotionTalk protects real on-screen operations first, then decides when to return to the presenter or explain an abstract relationship with motion graphics.
+For knowledge videos, opinion pieces, course explainers, and interview clips. MotionTalk controls the rhythm between the original talking video and motion graphics.
 
 ## Complete packaged-video frames
 
@@ -63,21 +57,11 @@ https://github.com/PoetCoderJun/MotionTalk
 
 ## Use
 
-Talking video only:
+Use:
 
 ```text
 Use $motiontalk with:
 - video: /data/talking-video.mp4
-- subtitles: /data/final.srt
-- output_dir: /work/mg/output
-```
-
-With a synchronized screen recording:
-
-```text
-Use $motiontalk with:
-- video: /data/talking-video.mp4
-- screen_video: /data/screen-recording.mp4
 - subtitles: /data/final.srt
 - output_dir: /work/mg/output
 ```
@@ -96,6 +80,8 @@ Verify that it matches the video timeline, then use $motiontalk with:
 - output_dir: /work/mg/output
 ```
 
-## Repository boundary
+## Efficient execution path
 
-This repository distributes Skill instructions and presentation assets only. It contains no executable JavaScript, TypeScript, Python, or shell source. MotionTalk creates any required Remotion project and temporary batch-rendering entry point inside the user-provided `output_dir`.
+This Skill ships reusable scripts for batched MG rendering, chapter overlays, one-pass full-video packaging, and final quality gates, so each project does not rewrite its own execution entry point. The project-specific Remotion visual source still lives inside the user-provided `output_dir`.
+
+Final packaging stays at 60fps. An optional anti-swipe pacing check can apply a 1.15× global speed-up while retiming audio, captions, chapters, and labeled progress together inside the single full-video packaging encode.

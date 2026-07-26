@@ -1,4 +1,4 @@
 interface:
   display_name: "MotionTalk"
-  short_description: "把精剪口播、同步录屏和 MG 自动编排成带字幕的可交付成片"
+  short_description: "把精剪口播与 MG 动画自动编排成带字幕和包装的可交付成片"
   default_prompt: "Use $motiontalk with my edited talking video and its final matching SRT to create a narration-driven motion-graphics video."
