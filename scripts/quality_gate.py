@@ -248,6 +248,16 @@ def main() -> int:
 
     window_frames: list[dict] = []
     window_ok = True
+    final_video_probe = probe(final_path)
+    final_video_stream = video_stream(final_video_probe)
+    final_video_duration = float(
+        final_video_stream.get("duration") or duration(final_video_probe)
+    )
+    final_fps_num, final_fps_den = map(
+        int, final_video_stream["avg_frame_rate"].split("/")
+    )
+    final_frame_duration = final_fps_den / final_fps_num
+    latest_extractable_time = max(0.0, final_video_duration - final_frame_duration)
     for cue in plan["cues"]:
         if cue["visual"] == "presenter-full-screen":
             continue
@@ -257,7 +267,7 @@ def main() -> int:
         moments = {
             "before": max(0, start - 0.05),
             "inside": (start + end) / 2,
-            "after": min(delivery_duration - 0.001, end + 0.05),
+            "after": min(latest_extractable_time, end + 0.05),
         }
         for label, moment in moments.items():
             destination = evidence_root / "windows" / f"{cue['id']}-{label}.jpg"
@@ -306,10 +316,38 @@ def main() -> int:
         output_dir / "package-checklist.v1.json", ("checks", "items")
     )
     package_ok &= package_manual_ok
+    package_style = plan.get("package_style", {})
+    progress_style = package_style.get("progress", {})
+    chapter_style = package_style.get("chapter_header", {})
+    caption_style = package_style.get("captions", {})
+    package_contract_ok = (
+        package_style.get("profile") == "sample-classic-v1"
+        and chapter_style.get("enabled") is True
+        and progress_style.get("enabled") is True
+        and int(progress_style.get("height_px", 0)) >= 24
+        and progress_style.get("mode") == "continuous-cumulative"
+        and progress_style.get("segment_by_chapter_duration") is True
+        and progress_style.get("show_labels") is True
+        and progress_style.get("label_layer") == "ass-only"
+        and caption_style.get("enabled") is True
+        and caption_style.get("single_layer") is True
+    )
+    package_ok &= package_contract_ok
     checks["package_progress"] = "passed" if package_ok else "failed"
     evidence["package_progress"] = {
         "chapter_count": len(plan.get("chapters", [])),
         "progress_segment_count": len(plan.get("chapters", [])),
+        "package_contract": {
+            "profile": package_style.get("profile"),
+            "chapter_header_enabled": chapter_style.get("enabled"),
+            "progress_enabled": progress_style.get("enabled"),
+            "progress_height_px": progress_style.get("height_px"),
+            "progress_mode": progress_style.get("mode"),
+            "progress_labels": progress_style.get("show_labels"),
+            "progress_label_layer": progress_style.get("label_layer"),
+            "caption_single_layer": caption_style.get("single_layer"),
+            "passed": package_contract_ok,
+        },
         "frames": package_frames,
         "visual_checklist": package_manual,
     }
@@ -377,10 +415,15 @@ def main() -> int:
             output_dir / "work" / f"{project_id}-clean-composite.mp4",
             output_dir / "work" / f"{project_id}-clean-video-only.mp4",
             output_dir / "work" / f"{project_id}-packaged-video-only.mp4",
+            output_dir / "work" / "package-pills.ffconcat",
+            output_dir / "work" / "package-pills-qtrle.mov",
         ):
             candidate.unlink(missing_ok=True)
         shutil.rmtree(output_dir / "work" / "composite-segments", ignore_errors=True)
         shutil.rmtree(output_dir / "work" / "package-chapters", ignore_errors=True)
+        shutil.rmtree(
+            output_dir / "work" / "package-overlays-cropped", ignore_errors=True
+        )
     print(report_path)
     return 0 if passed else 1
 
