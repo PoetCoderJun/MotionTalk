@@ -108,6 +108,69 @@ def display_width(character: str) -> float:
     return 0.55 if ord(character) < 128 else 1.0
 
 
+def ass_bgr_color(value: str) -> str:
+    """#RRGGBB -> BBGGRR for ASS \\1c override tags."""
+    value = value.strip().lstrip("#")
+    if not re.fullmatch(r"[0-9A-Fa-f]{6}", value):
+        raise ValueError(f"invalid emphasis color: {value!r}")
+    red, green, blue = value[0:2], value[2:4], value[4:6]
+    return f"{blue}{green}{red}".upper()
+
+
+def softened_font_scale(requested: float) -> float:
+    """Emphasis scale, softened and clamped to [1.16, 1.3] (1.0 keeps base size)."""
+    if requested <= 1:
+        return 1.0
+    return max(1.16, min(1.3, 1 + (requested - 1) * 0.85))
+
+
+def apply_caption_emphasis(
+    wrapped: str,
+    keywords: list[dict],
+    base_font_size: int,
+    default_color: str,
+    default_scale: float,
+) -> str:
+    """Wrap keyword occurrences in ASS size/colour override tags.
+
+    `wrapped` is wrap_caption() output (lines joined by \\N, braces already
+    escaped). A keyword split across a line break is emphasised part by part;
+    unmatched keywords are ignored silently.
+    """
+    if not keywords:
+        return wrapped
+    lines = wrapped.split(r"\N")
+    for item in keywords:
+        text = str(item.get("text", ""))
+        if not text:
+            continue
+        color = ass_bgr_color(str(item.get("color") or default_color))
+        size = round(base_font_size * softened_font_scale(float(item.get("scale", default_scale))))
+        open_tag = rf"{{\fs{size}\1c&H{color}&}}"
+        remaining = text
+        index = 0
+        while remaining and index < len(lines):
+            line = lines[index]
+            pos = line.find(remaining)
+            if pos != -1:
+                part = remaining
+            else:
+                part = ""
+                for length in range(min(len(remaining), len(line)), 0, -1):
+                    candidate = remaining[:length]
+                    if line.endswith(candidate):
+                        part = candidate
+                        pos = len(line) - length
+                        break
+                if not part:
+                    index += 1
+                    continue
+            lines[index] = line[:pos] + open_tag + part + r"{\r}" + line[pos + len(part) :]
+            remaining = remaining[len(part) :]
+            index += 1
+    return r"\N".join(lines)
+
+
 def wrap_caption(text: str, max_units: float = 23) -> str:
     text = re.sub(r"\s+", " ", text).strip()
     lines: list[str] = []
@@ -182,6 +245,7 @@ def write_ass(
     source_duration: float,
     speed: float,
     show_progress_labels: bool = True,
+    caption_highlights: dict | None = None,
 ) -> None:
     header = """[Script Info]
 ScriptType: v4.00+
@@ -199,8 +263,23 @@ Style: Progress,PingFang SC,20,&H00FFFFFF,&H00FFFFFF,&H66000000,&H00000000,-1,0,
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 """
     events = []
-    for start, end, text in entries:
+    base_font_size = 53
+    highlights = caption_highlights or {}
+    emphasis_enabled = bool(highlights.get("enabled"))
+    default_color = str(highlights.get("color", "#FFD166"))
+    default_scale = float(highlights.get("font_scale", 1.2))
+    cue_keywords = highlights.get("cues", {}) if isinstance(highlights.get("cues"), dict) else {}
+    for index, (start, end, text) in enumerate(entries, start=1):
         safe = wrap_caption(text).replace("{", r"\{").replace("}", r"\}")
+        if emphasis_enabled:
+            raw_keywords = cue_keywords.get(str(index)) or cue_keywords.get(index) or []
+            keywords = [
+                item if isinstance(item, dict) else {"text": str(item)}
+                for item in raw_keywords
+            ]
+            safe = apply_caption_emphasis(
+                safe, keywords, base_font_size, default_color, default_scale
+            )
         events.append(
             f"Dialogue: 0,{ass_time(start / speed)},{ass_time(end / speed)},"
             f"MotionTalk,,0,0,0,,{safe}"
@@ -658,6 +737,7 @@ def main() -> int:
         source_duration,
         args.speed,
         show_progress_labels,
+        caption_highlights=plan.get("caption_highlights"),
     )
     pill_concat = work / "package-pills.ffconcat"
     pill_concat_lines = ["ffconcat version 1.0"]

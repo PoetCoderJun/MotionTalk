@@ -3,6 +3,8 @@
 # Local dependencies and renderer caches
 node_modules/
 .remotion/
+__pycache__/
+*.py[cod]
 
 # Local working outputs and private video materials
 mg-output/

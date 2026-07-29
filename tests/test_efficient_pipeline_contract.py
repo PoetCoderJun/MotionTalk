@@ -8,7 +8,7 @@ SKILL_ROOT = Path(__file__).resolve().parents[1]
 
 
 class EfficientPipelineContractTests(unittest.TestCase):
-    def test_skill_supports_talking_video_and_mg_only(self):
+    def test_skill_keeps_single_video_base_contract(self):
         checked = (
             "README.md",
             "README_EN.md",
@@ -20,9 +20,6 @@ class EfficientPipelineContractTests(unittest.TestCase):
         )
         forbidden = (
             "screen_video",
-            "screen recording",
-            "synchronized screen",
-            "录屏",
             "双视频",
             "screen_windows",
         )
@@ -30,6 +27,17 @@ class EfficientPipelineContractTests(unittest.TestCase):
             text = (SKILL_ROOT / relative).read_text(encoding="utf-8").lower()
             for token in forbidden:
                 self.assertNotIn(token.lower(), text, f"{relative}: {token}")
+
+    def test_optional_screen_recording_is_scoped_to_switching_theme(self):
+        skill = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
+        themes = (SKILL_ROOT / "references" / "05-mg-themes.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("精剪口播视频", skill)
+        self.assertIn("最终 SRT", skill)
+        self.assertIn("switching", themes)
+        self.assertIn("录屏", themes)
+        self.assertIn("未明确时默认 **B**", themes)
 
     def test_bundled_pipeline_scripts_exist_and_have_help(self):
         scripts = (

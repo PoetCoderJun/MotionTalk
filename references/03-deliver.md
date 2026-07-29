@@ -112,7 +112,13 @@ FFmpeg 动态进度不得在 `drawbox` 的宽度表达式里把 `t` 当作时间
 
 ## 3. 最终质量门禁
 
-不生成预览视频。使用 `scripts/quality_gate.py` 直接对正式包装成片执行下列检查，并把结果写入 `quality-report.v1.json`：
+不生成预览视频。运行 `scripts/quality_gate.py` 前，必须先基于正式成片的全尺寸证据帧人工写好三份检查表（`quality_gate.py` 只认 `checks`/`items`/`invariants` 键下的记录数组，且全部记录为 `passed` 才计通过）：
+
+- `semantic-checklist.v1.json`（阶段 2A 已写，确认证据帧仍对应最终包装成片）；
+- `aspect-occlusion-checklist.v1.json`：每个发生 crop/scale 的人像布局一条记录，或（`floating-overlay` 主题）确认人像全屏底画无变换、MG 未压脸的记录；
+- `package-checklist.v1.json`：章节牌可读且仅一套、30px 进度轨道肉眼可见且累计填充单调向右、字幕仅一套、章节开头无灰帧/黑帧/冻结占位。
+
+然后使用 `scripts/quality_gate.py` 直接对正式包装成片执行下列检查，并把结果写入 `quality-report.v1.json`：
 
 1. **结构**：用 `ffprobe` 记录正式包装成片的时长、帧率、分辨率、视频帧数、音视频轨数量；格式总时长与输入相差不得超过 0.1 秒，视频帧数差不得超过 `ceil(0.1 × 输出 fps)`，分辨率和轨道结构必须符合批准版计划。
 2. **完整解码**：运行 `ffmpeg -v error -i <packaged> -f null -`，stderr 必须为空。
