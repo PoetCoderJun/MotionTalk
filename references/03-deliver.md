@@ -14,6 +14,14 @@
 4. 同一个脚本对整条视频底执行**单次整片包装**：一次叠加章节静帧、累计进度条和字幕，一次视频编码，同时从口播原片复制主音频；
 5. `scripts/quality_gate.py` 完成最终门禁；通过后只删除脚本创建的精确中间片。
 
+当批准版 `presenter_policy.default` 为 `full-screen-underlay`，且 cue 的
+`visual` 为 `transparent-floating-overlay-on-presenter` 时，人物原片直接作为
+全屏底画。正式 MG 片段使用 placement plan 的 `overlay_style.key_color`
+纯色键背景，`build_and_package.py` 通过同一份计划里的 `key_similarity` 与
+`key_blend` 抠出 MG，并按 `despill_type/despill_mix/despill_expand`
+消除键色边缘污染后覆盖到底画；这一模式不创建人物圆窗，也不把 MG 当作
+整屏替代画面。键色不得用于 MG 正文、图标、阴影或抗锯齿边缘。
+
 这套路径是默认执行入口，不要把脚本复制进项目后私改。先运行各脚本的 `--help`；标准命令见下一节。
 
 FFmpeg 合成不得把 1920×1080 底片转为整片 RGBA，也不得让每帧串行穿过所有 cue 的 overlay 链。脚本按完整时间线切成互斥 segment：
@@ -54,6 +62,15 @@ macOS CPU 完成 overlay/crop/mask，输出编码用：
 
 `durationInFrames = ceil(ffprobe临时合成片时长 × 30)`。保留完整包装 composition 作为视觉规格和回退入口，但默认不要让 Chromium 逐帧读取整条临时合成片。
 
+先执行包装配置门禁：
+
+```bash
+python3 <skill-root>/scripts/validate_plan.py \
+  --plan "$output_dir/mg-placement-plan.v1.json"
+```
+
+默认把 `<skill-root>/assets/remotion/Package.tsx` 作为包装基线。项目可以调整章节标题和主题色，但用户只要求变化 MG 时，不得改动章节牌结构、进度条尺寸、累计填充或字幕层级。
+
 给包装 composition 增加 `overlayOnly` 模式：背景透明，不含 `OffthreadVideo`、字幕和动态进度填充。依次执行：
 
 ```bash
@@ -83,9 +100,9 @@ python3 <skill-root>/scripts/quality_gate.py \
 
 - 字幕：`bottom:96`，`maxWidth:68%`，字号 `max(26, height*0.049)`，700，`#f9fbff`，line-height 1.5；四正方向 `±0.035em rgba(15,23,42,.7)`、四斜角 `±0.025em rgba(15,23,42,.55)`、下方柔影。
 - 章节 pill：`top:3.5%`、`left:2.2%`，深色半透明渐变、14px 圆角、5px accent 竖条；`CHAPTER i/N` 与章节标题。accent 依次为 `#8ee0ff #ffb38a #9dffc3 #c4a8ff #ffd166 #ff8ad1`。
-- 进度条：固定复用稳定样片的一条连续圆角底轨，`bottom:28`、左右 46、高 30、圆角 999、`2px rgba(255,255,255,.14)` 边框、`rgba(13,18,27,.38)` 深色底；底层从整片 0 秒起累计填充 `rgba(93,220,205,.36)`。章节只在同一底轨内按时长比例分段，以 `1px rgba(255,255,255,.10)` 分隔，不得改成互相留缝的独立彩色胶囊、每章独立重置的填充或多套并列进度条。
+- 进度条：固定复用稳定样片的一条连续圆角底轨，`bottom:28`、左右 46、高 30、圆角 999、`2px rgba(255,255,255,.14)` 边框、`rgba(13,18,27,.38)` 深色底；内层从整片 0 秒起累计填充 `rgba(93,220,205,.36)`。章节只在同一底轨内按时长比例分段，以 `1px rgba(255,255,255,.20)` 分隔，不得改成低于 24px 的细线、互相留缝的独立彩色胶囊、每章独立重置的填充或多套并列进度条。
 
-进度条结构必须与标题排版解耦。章节标题再长也不得删除、合并或跳过任何进度条分段；分段宽度只按章节时长计算，不得由标签文字的最小宽度决定。`build_and_package.py` 会优先读取 `short_label`、其次 `short_title/title`，空间不足时自动省略，极窄分段退回章节数字，确保每段都有可见文字。渲染前断言 `topics` 数量等于进度条分段数量；再抽取开头、至少一个章节切换后和接近结尾三张完整底条截图，逐段确认边界、文字、总数和累计填充方向，不能只检查当前章节高亮。
+进度条结构必须与标题排版解耦。`sample-classic-v1` 在轨道内显示短章节标签，但标签只能由最终 ASS 单层绘制；`Package.tsx` 只画底轨和分隔线，不得重复画标签。绘制顺序固定为“底轨 → 累计填充 → 章节 pill → ASS 标签与字幕”，因此填充不会压住文字。分段宽度只按章节时长计算；标签优先读取 `short_label`，空间不足时省略，极窄分段退回章节数字。渲染前断言 `topics` 数量等于进度条分段数量；再抽取开头、至少一个章节切换后和接近结尾三张完整底条截图，逐段确认边界、标签、总数、可见高度和累计填充方向。
 
 静态包装 PNG 进入 FFmpeg `overlay` 时必须显式循环为输出帧率；固定脚本已经加入 `-loop 1 -framerate 60`。不得把每章开头的默认灰帧/黑帧当作正常解码延迟；最终门禁会抽取每章开头 0.5 秒内的证据帧，纯色占位连续超过 1 帧即失败。
 
@@ -95,14 +112,20 @@ FFmpeg 动态进度不得在 `drawbox` 的宽度表达式里把 `t` 当作时间
 
 ## 3. 最终质量门禁
 
-不生成预览视频。使用 `scripts/quality_gate.py` 直接对正式包装成片执行下列检查，并把结果写入 `quality-report.v1.json`：
+不生成预览视频。运行 `scripts/quality_gate.py` 前，必须先基于正式成片的全尺寸证据帧人工写好三份检查表（`quality_gate.py` 只认 `checks`/`items`/`invariants` 键下的记录数组，且全部记录为 `passed` 才计通过）：
+
+- `semantic-checklist.v1.json`（阶段 2A 已写，确认证据帧仍对应最终包装成片）；
+- `aspect-occlusion-checklist.v1.json`：每个发生 crop/scale 的人像布局一条记录，或（`floating-overlay` 主题）确认人像全屏底画无变换、MG 未压脸的记录；
+- `package-checklist.v1.json`：章节牌可读且仅一套、30px 进度轨道肉眼可见且累计填充单调向右、字幕仅一套、章节开头无灰帧/黑帧/冻结占位。
+
+然后使用 `scripts/quality_gate.py` 直接对正式包装成片执行下列检查，并把结果写入 `quality-report.v1.json`：
 
 1. **结构**：用 `ffprobe` 记录正式包装成片的时长、帧率、分辨率、视频帧数、音视频轨数量；格式总时长与输入相差不得超过 0.1 秒，视频帧数差不得超过 `ceil(0.1 × 输出 fps)`，分辨率和轨道结构必须符合批准版计划。
 2. **完整解码**：运行 `ffmpeg -v error -i <packaged> -f null -`，stderr 必须为空。
 3. **音频来源**：未提速时分别对输入和包装版的最终音轨执行 stream MD5，两者必须完全相同；启用 `--speed` 时验证唯一音轨、目标时长和 `atempo` 证据。包装版始终只能有一条来自口播的音轨。
 4. **窗口与边界**：每个 MG 窗口内至少抽 1 帧，边界前后各抽 1 帧；每章开头前 0.5 秒检查纯灰、纯黑或冻结占位帧。
 5. **比例与遮挡**：把发生 crop/scale 的输入原帧和合成帧并排检查；确认人脸、圆形和 UI 未变形，关键操作无遮挡。
-6. **包装**：检查开头、中段、章节切换后和接近结尾的全尺寸帧；章节数与进度分段数相等，累计填充只向右、不归零，字幕和章节牌各只有一套。
+6. **包装**：检查开头、中段、每个章节切换后和接近结尾的全尺寸帧；章节数与进度分段数相等，章节 pill 始终可读，30px 进度轨道肉眼可见，累计填充只向右、不归零，字幕和章节牌各只有一套。不得用裁剪过小的联系表替代全尺寸检查。
 7. **语义**：`semantic-checklist.v1.json` 中每条 invariant 都为 `passed`，证据帧仍对应最终包装成片。
 8. **编码证据**：保存 Remotion 和 FFmpeg 完整日志；macOS 日志必须出现真实 `h264_videotoolbox` 编码器证据。
 9. **交付清洁度**：`final/` 只能包含正式包装成片，不得包含 `preview`、`540p`、`clean-master`、`clean-composite` 或其他整片副本。

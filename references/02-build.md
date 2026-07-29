@@ -22,6 +22,14 @@ npx remotion browser ensure
 
 每个 cue 静音，不含字幕、人像、角标、章节或进度条。动画只用 `useCurrentFrame`、`interpolate`、`spring` 驱动，不用 wall clock。预留左上约 460×150、底部约 140、右下 400×400 安全区。相互对准的线和节点必须共用一套像素坐标。
 
+`floating-overlay` 主题（抠绿链路）的额外硬约束：
+
+- 场景背景整屏纯色 `#00FF00`；元素、文字、图标、描边、阴影禁用绿色系；
+- 禁用半透明填充与模糊投影（会被 colorkey 抠穿），阴影用不透明深色偏移块；
+- 批准版 `presenter_policy` 的人脸安全区绝对留空，MG 只进入 `mg_allowed_zones`。
+
+工程搭建提速：已有同版本（@remotion/* 4.0.419 / react 19.2.3）的旧工程时，直接整目录复制 `node_modules`、`package.json`、`package-lock.json`、`tsconfig.json`，跳过 `npm install`。
+
 按字幕本身大胆设计，每段只讲一个观点。导演脚本表达意图，不是施工图；可替换成更好的视觉比喻。唯一形式底线是不要做“幻灯片换页”，画面至少有一个会动的关系。
 
 ## 2. 一次 bundle、一次 browser
@@ -55,7 +63,7 @@ macOS 正式批量制作前，先渲染一个代表 cue；日志必须确认 `h2
 2. 用 FFmpeg 从每个正式片段抽帧：开头、各视觉节拍、结尾前 1 秒，以及每条 `semantic_invariants[].proof_moment` 对应的证据帧；同一帧可同时证明多条验收点。
 3. 先检查画面质量：重叠、错位、出界、死时间、文字和安全区。
 4. 再把证据帧与批准版 `semantic_invariants` 逐条对照：画面必须直接支持 `assertion`，且没有出现任何 `forbidden`。不能用“整体意思差不多”“也算一种分叉”或“导演脚本不是施工图”替代逐条证明。
-5. 写入 `semantic-checklist.v1.json`：每条记录包含 `cue_id/invariant_id/evidence_frame/evidence_time_seconds/status/notes`。只有全部记录为 `passed`，该 cue 才能通过；无法仅凭静态帧判断节奏或状态先后时，直接播放正式 cue，并补抽状态变化前后的证据帧。
+5. 写入 `semantic-checklist.v1.json`：记录数组的键必须是 `checks`、`items` 或 `invariants` 之一（`quality_gate.py` 只认这三个键），每条记录包含 `cue_id/invariant_id/evidence_frame/evidence_time_seconds/status/notes`。只有全部记录为 `passed`，该 cue 才能通过；无法仅凭静态帧判断节奏或状态先后时，直接播放正式 cue，并补抽状态变化前后的证据帧。
 6. 任一画面项或语义项失败，只修改并重渲受影响的 cue，然后重新生成它的检查表和语义清单。
 
 ## 4. 连续进入整片合成与交付

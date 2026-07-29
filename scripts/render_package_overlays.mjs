@@ -70,13 +70,14 @@ const browserExecutable =
   null;
 const browser = await openBrowser("chrome", {browserExecutable});
 try {
-  const composition = await selectComposition({
-    serveUrl,
-    id: compositionId,
-    inputProps,
-    puppeteerInstance: browser,
-  });
-  for (const topic of inputProps.topics) {
+  for (const [chapterIndex, topic] of inputProps.topics.entries()) {
+    const chapterProps = {...inputProps, chapterIndex};
+    const composition = await selectComposition({
+      serveUrl,
+      id: compositionId,
+      inputProps: chapterProps,
+      puppeteerInstance: browser,
+    });
     const frame = Math.max(
       0,
       Math.min(
@@ -90,7 +91,7 @@ try {
       serveUrl,
       output,
       frame,
-      inputProps,
+      inputProps: chapterProps,
       imageFormat: "png",
       puppeteerInstance: browser,
     });

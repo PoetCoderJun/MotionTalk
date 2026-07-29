@@ -2,15 +2,21 @@
 
 # MotionTalk
 
-Give MotionTalk one edited selfie talking video and its matching subtitles. MotionTalk automatically decides when to keep you on screen or use MG to explain an abstract idea—then delivers a fancy, top-creator-style video with chapters, captions, progress, and task masks.
+Give MotionTalk one edited talking video and an SRT that matches it exactly. It decides when to keep the presenter on screen, when motion graphics can make an abstract idea clearer, and delivers a final video with chapter headers, captions, cumulative progress, and complete visual packaging.
 
-## One Skill for visual decisions and production
+It is not a random effect generator. MotionTalk packages visual direction, motion-graphics production, full-video packaging, and evidence-based quality control into one repeatable Agent Skill.
 
-- Keeps the presenter when human presence matters.
-- Adds motion graphics when concepts need visualization.
-- Delivers a packaged video with chapters, captions, progress, task masks, and visual polish.
+## From edited talk to packaged video
 
-You do not need to prepare a storyboard or specify every effect. MotionTalk reads the complete video and decides whether each moment belongs with the presenter or motion graphics.
+```text
+Edited talking video + final SRT
+  → Agent reads the full piece and drafts a director plan
+  → One user approval
+  → Final MG → composite → packaging → quality gates
+  → Deliver only the final packaged video
+```
+
+The director-plan approval is the only interruption in the workflow. Visual theme, caption highlights, pacing, layout, and occlusion strategy are proposed in that single draft. After approval, MotionTalk builds and delivers continuously without asking for another “continue” confirmation.
 
 ## Input → output
 
@@ -19,17 +25,23 @@ You do not need to prepare a storyboard or specify every effect. MotionTalk read
 | Edited talking video | Yes | The only source of timeline, meaning, and final audio |
 | Final SRT | Yes | Must match the edited video timeline exactly |
 
-The output is a fully captioned and visually packaged final video. MotionTalk does not run ASR, remove mistakes or pauses, or recut the source video.
+The output is a fully captioned and visually packaged final video. MotionTalk does not run ASR, remove mistakes or pauses, or recut the source video. The talking video remains the only source of timeline, meaning, and final audio.
 
-The director plan is approved once. After approval, MotionTalk continuously renders the final MG, composites and packages the full video, runs the quality gates, and delivers the result without asking for another “continue delivery” confirmation.
+If you only have a raw recording, run [**clean-talking-video**](https://github.com/PoetCoderJun/clean-talking-video) first to produce an edited video and a timeline-accurate SRT, then pass both outputs to MotionTalk.
 
-## Visual rhythm: talking video ↔ motion graphics
+## Three visual-composition themes
 
-For knowledge videos, opinion pieces, course explainers, and interview clips. MotionTalk controls the rhythm between the original talking video and motion graphics.
+Each project selects one theme and freezes it in the approved director plan:
+
+- **floating-overlay**: the presenter stays full-screen while MG floats inside measured safe zones—no replacement or presenter mask;
+- **mg-with-presenter-window**: full-screen MG with the presenter in a lower-right circle or rectangle; this is the default;
+- **switching**: presenter, MG, and optional screen recording switch by content, useful for courses and product explainers.
+
+Themes control the relationship between presenter and MG. The chapter pill, 30px continuous cumulative progress track, and single caption layer are mandatory packaging elements and do not disappear when the MG style changes.
 
 ## Complete packaged-video frames
 
-Every image below preserves the complete video frame, including chapters, captions, progress, task masks, presenter framing, and player state.
+Every image below preserves the complete video frame, including chapters, captions, progress, presenter framing, and player state.
 
 <p align="center">
   <img src="assets/readme/cover-source/01-talking-video.png" alt="Complete frame: talking video, chapter, captions, and progress bar" width="49%">
@@ -80,6 +92,33 @@ Verify that it matches the video timeline, then use $motiontalk with:
 
 ## Efficient execution path
 
-This Skill ships reusable scripts for batched MG rendering, chapter overlays, one-pass full-video packaging, and final quality gates, so each project does not rewrite its own execution entry point. The project-specific Remotion visual source still lives inside the user-provided `output_dir`.
+The repository ships fixed execution entry points:
 
-Final packaging stays at 60fps. An optional anti-swipe pacing check can apply a 1.15× global speed-up while retiming audio, captions, chapters, and labeled progress together inside the single full-video packaging encode.
+- `validate_plan.py`: validates approval, semantic invariants, visual theme, and packaging contract;
+- `render_segments.mjs`: bundles once, opens one browser, and renders every final MG cue;
+- `render_package_overlays.mjs`: renders transparent chapter overlays;
+- `build_and_package.py`: composites mutually exclusive cues and performs one full-video packaging pass;
+- `quality_gate.py`: checks full decode, source-audio identity, evidence frames, and visible packaging.
+
+Final delivery stays at 60fps. When needed, an optional 1.15× global speed-up retimes video, source audio, captions, chapters, and progress together inside the single packaging encode.
+
+## Quality gates
+
+MotionTalk does not treat “FFmpeg exited successfully” as delivery:
+
+- every MG semantic invariant must have an evidence frame;
+- presenter proportions must survive crop/scale, and MG must not cover the face;
+- chapter pill, 30px progress track, and one caption layer must be visibly present in full-size evidence frames;
+- final audio must come only from the input video, with full decode and timeline checks passing;
+- every required check in `quality-report.v1.json` must be `passed`.
+
+## Development
+
+```bash
+python3 -m unittest discover -s tests -v
+python3 scripts/test_build_and_package.py
+```
+
+## License
+
+Original repository material is available under [CC BY-NC-SA 4.0](LICENSE.md) for non-commercial use. Commercial use requires separate written permission.
