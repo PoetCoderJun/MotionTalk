@@ -19,6 +19,11 @@
 使用相对坐标、响应式 CSS 或 `renderSpec` 计算几何。项目代码可以针对批准画面
 写具体位置，但 Skill 脚本和文档中不得沉淀该项目的尺寸常量。
 
+若批准计划引用 `PPT Focus Portrait`，按
+[04-theme-ppt-focus-portrait.md](04-theme-ppt-focus-portrait.md) 的比例关系实现，
+再用本项目最长字幕、开场花字、人物窗和结尾 CTA 证据帧校准；不要复制另一个
+项目的 Remotion component。
+
 ## 证据帧
 
 先运行 `validate_plan.py`，再用 `render_master.mjs --still` 从同一

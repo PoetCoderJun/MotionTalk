@@ -8,7 +8,7 @@ import {pathToFileURL} from "node:url";
 
 const HELP = `Usage:
   node render_master.mjs --project-dir DIR --props FILE [--output FILE]
-    [--still FRAME:FILE ...] [--browser-executable FILE]
+    [--still FRAME:FILE ...]
     [--concurrency NUMBER|PERCENT] [--hardware-acceleration MODE]
     [--video-bitrate RATE] [--offthread-video-threads NUMBER]
 Defaults: concurrency 75%; hardware acceleration if-possible.
@@ -110,14 +110,10 @@ const main = async () => {
     entryPoint: path.join(projectDir, "src", "index.ts"),
     publicDir: path.join(projectDir, "public"),
   });
-  const browserExecutable = args.browser_executable
-    ? path.resolve(args.browser_executable)
-    : undefined;
   const composition = await renderer.selectComposition({
     serveUrl,
     id: "MasterComposition",
     inputProps,
-    browserExecutable,
   });
 
   if (args.output) {
@@ -139,7 +135,6 @@ const main = async () => {
       offthreadVideoThreads: renderOptions.offthreadVideoThreads,
       offthreadVideoCacheSizeInBytes: 128 * 1024 * 1024,
       mediaCacheSizeInBytes: 256 * 1024 * 1024,
-      browserExecutable,
       onStart: ({frameCount, parallelEncoding, resolvedConcurrency}) => {
         process.stdout.write(`Render start: ${frameCount} frames, concurrency ` +
           `${resolvedConcurrency}, parallel encoding ${parallelEncoding}\n`);
@@ -165,7 +160,6 @@ const main = async () => {
       output: request.output,
       imageFormat: "png",
       overwrite: true,
-      browserExecutable,
     });
   }
 };

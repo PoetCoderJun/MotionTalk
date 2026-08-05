@@ -52,8 +52,8 @@ project's plan.
 - `validate_plan.py` validates approval, project render spec, cue coverage,
   visual prompts, and semantic invariants;
 - `render_master.mjs` uses official Remotion entry points, defaults to 75% of
-  available concurrency, and keeps a portable fallback when hardware encoding
-  is unavailable;
+  available concurrency, loads Remotion from the project dependencies, uses a
+  Remotion-managed browser, and keeps a portable hardware fallback;
 - `validate_master.mjs` validates the final video against project data and
   approved evidence.
 
@@ -64,6 +64,20 @@ The default command is portable across macOS, Windows, and Linux. It uses
 execution environment cannot access a hardware encoder, Remotion falls back to
 software encoding instead of treating a platform-specific encoder as a
 prerequisite.
+
+The renderer loads `@remotion/bundler` and `@remotion/renderer` from the local
+project and uses a version-matched, Remotion-managed Headless Shell. The first
+run may download that compatible browser. Do not pass a system Chrome path or
+delegate browser version management to an external Chrome installation.
+
+## Reusable theme
+
+`PPT Focus Portrait` is a prompt reference for a portrait composition with the
+PPT as the primary visual, a self-fitting two-line subtitle rail below it, a
+bottom-right presenter, lightweight lower-left display type, and bottom chapter
+progress. It preserves proportions and evidence gates without shipping a fixed
+Remotion template. See
+[`references/04-theme-ppt-focus-portrait.md`](references/04-theme-ppt-focus-portrait.md).
 
 ### macOS performance recommendation (optional)
 

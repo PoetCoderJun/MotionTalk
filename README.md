@@ -49,7 +49,8 @@ npx skills add PoetCoderJun/MotionTalk
 - `validate_plan.py`：验证批准状态、项目 render spec、完整 cue 时间线、视觉
   Prompt 和语义验收点；
 - `render_master.mjs`：通过 Remotion 官方入口正式渲染并抽帧；默认使用 75%
-  的可用并发，并在硬件编码不可用时保持跨平台回退；
+  的可用并发，从项目依赖加载 Remotion 并使用 Remotion 自管浏览器，在硬件
+  编码不可用时保持跨平台回退；
 - `validate_master.mjs`：按项目 render spec 和批准的证据清单验收成片。
 
 ## 渲染性能
@@ -57,6 +58,17 @@ npx skills add PoetCoderJun/MotionTalk
 默认命令适用于 macOS、Windows 和 Linux：并发为 `75%`，硬件编码策略为
 `if-possible`。设备或执行环境无法访问硬件编码器时会自动使用软件编码，不把
 任何平台专属编码器作为安装或交付前提。
+
+渲染入口使用项目本机安装的 `@remotion/bundler` 与 `@remotion/renderer`，并由
+Remotion 自管与当前版本匹配的 Headless Shell。首次运行可能自动下载兼容版本；
+不要传入系统 Chrome 路径，也不要把浏览器版本管理交给外部 Chrome。
+
+## 可复用主题
+
+`PPT Focus Portrait` 是一套 Prompt 主题参考：PPT 位于画面视觉中心偏上，字幕
+紧接 PPT 且严格最多两行，人物位于右下，左下使用轻量花字或结论，底部保留章节
+进度。它保存比例和验收规则，不提供固定 Remotion 模板。详见
+[`references/04-theme-ppt-focus-portrait.md`](references/04-theme-ppt-focus-portrait.md)。
 
 ### macOS 性能建议（可选）
 

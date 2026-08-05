@@ -28,6 +28,23 @@ class RenderPerformanceContractTests(unittest.TestCase):
         self.assertIn("--hardware-acceleration MODE", self.renderer)
         self.assertIn("--video-bitrate RATE", self.renderer)
 
+    def test_renderer_uses_project_local_remotion_managed_browser(self):
+        self.assertIn("createRequire(path.join(projectDir, \"package.json\"))", self.renderer)
+        self.assertNotIn("--browser-executable", self.renderer)
+        self.assertNotIn("browserExecutable", self.renderer)
+
+        docs = "\n".join(
+            (SKILL_ROOT / relative).read_text(encoding="utf-8")
+            for relative in (
+                "README.md",
+                "README_EN.md",
+                "references/03-deliver.md",
+            )
+        )
+        self.assertIn("Remotion 自管", docs)
+        self.assertIn("Remotion-managed", docs)
+        self.assertIn("不要传入系统 Chrome", docs)
+
     def test_videotoolbox_is_optional_readme_guidance_only(self):
         readme = (SKILL_ROOT / "README.md").read_text(encoding="utf-8")
         readme_en = (SKILL_ROOT / "README_EN.md").read_text(encoding="utf-8")

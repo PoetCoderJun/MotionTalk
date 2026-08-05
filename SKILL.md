@@ -37,6 +37,10 @@ MotionTalk 是一个 **prompt-first** 的口播视频后期工作流。它不做
   当次素材、平台、样例及用户要求决定，并写入批准版计划。
 - Skill 不携带 Remotion 工程模板。批准后在 `output_dir/remotion/` 创建只服务
   当前计划的最小项目；不得把项目视觉差异反向膨胀成 Skill 参数体系。
+- 用户明确选择 PPT 主视觉竖屏主题时，读取
+  [references/04-theme-ppt-focus-portrait.md](references/04-theme-ppt-focus-portrait.md)
+  作为导演 Prompt 参考。主题参考是比例与验收规则，**不是代码模式**；仍需按
+  当次画布、PPT、字幕和人物素材重算布局。
 - 同一项目只保留一个 `MasterComposition`。底片、唯一主音频、字幕、MG 和
   包装在同一 Remotion 时间线中渲染；文字直接使用 DOM/SVG。
 - 使用相对布局、画布尺寸或计划传入的数据计算几何；禁止把某个项目的尺寸、
@@ -49,7 +53,8 @@ MotionTalk 是一个 **prompt-first** 的口播视频后期工作流。它不做
 - `validate_plan.py`：验证批准状态、项目 render spec、完整 cue 时间线、视觉
   Prompt 和语义验收点；
 - `render_master.mjs`：以跨平台可回退的默认配置调用 Remotion 官方入口完成
-  正式渲染和抽帧，并允许按当前机器显式覆盖并发、硬件策略和码率；
+  正式渲染和抽帧，从项目 `package.json` 加载 Remotion 并使用其自管浏览器，
+  同时允许按当前机器显式覆盖并发、硬件策略和码率；
 - `validate_master.mjs`：按项目 render spec、批准的语义清单和证据帧验收成片。
 
 不要为单个项目修改这些入口。视觉实现写在该项目的 Remotion 工程中。
