@@ -16,31 +16,53 @@ def valid_plan() -> dict:
     return {
         "status": "approved",
         "approved": True,
-        "mg_theme": "mg-with-presenter-window",
         "source": {
             "video": "/data/edited.mp4",
             "subtitles": "/data/final.srt",
-            "width": 1920,
-            "height": 1080,
-            "fps": 60,
+            "width": 1280,
+            "height": 720,
+            "fps": 30,
             "duration_seconds": 2,
         },
+        "render_spec": {
+            "width": 1080,
+            "height": 1920,
+            "fps": 30,
+        },
+        "visual_direction": (
+            "Keep the presenter full-screen and place only necessary MG in measured "
+            "safe zones. This is project direction, not a named code mode."
+        ),
+        "package_direction": (
+            "Render one caption layer and the chapter/progress treatment approved "
+            "in the director plan."
+        ),
         "cues": [
             {
-                "id": "presenter-01",
+                "id": "opening",
                 "start_seconds": 0,
                 "end_seconds": 1,
-                "visual": "presenter-full-screen",
-            },
-            {
-                "id": "mg-01",
-                "start_seconds": 1,
-                "end_seconds": 2,
-                "visual": "full-screen-mg",
+                "visual_prompt": "Keep the presenter full-screen.",
                 "spec": {
                     "semantic_invariants": [
                         {
-                            "id": "meaning-01",
+                            "id": "opening-meaning",
+                            "assertion": "The presenter remains visible.",
+                            "proof_moment": 0.5,
+                            "forbidden": ["replace the presenter"],
+                        }
+                    ]
+                },
+            },
+            {
+                "id": "explanation",
+                "start_seconds": 1,
+                "end_seconds": 2,
+                "visual_prompt": "Use a relationship diagram beside the presenter.",
+                "spec": {
+                    "semantic_invariants": [
+                        {
+                            "id": "relationship",
                             "assertion": "The diagram shows the stated relationship.",
                             "proof_moment": 1.5,
                             "forbidden": [],
@@ -49,67 +71,48 @@ def valid_plan() -> dict:
                 },
             },
         ],
-        "chapters": [
-            {
-                "id": "chapter-01",
-                "start_seconds": 0,
-                "end_seconds": 2,
-                "title": "Opening",
-            }
-        ],
-        "caption_highlights": {
-            "enabled": True,
-            "cues": {"1": ["important"]},
-        },
-        "package_style": {
-            "profile": "sample-classic-v1",
-            "chapter_header": {"enabled": True},
-            "progress": {
-                "enabled": True,
-                "height_px": 30,
-                "mode": "continuous-cumulative",
-                "segment_by_chapter_duration": True,
-                "show_labels": True,
-                "label_layer": "ass-only",
-            },
-            "captions": {"enabled": True, "single_layer": True},
-        },
     }
 
 
 class ValidatePlanContractTests(unittest.TestCase):
-    def test_valid_default_theme_plan_passes(self):
+    def test_arbitrary_render_spec_and_visual_prompt_pass(self):
         self.assertEqual(validator.validate(valid_plan()), [])
 
-    def test_disabled_caption_highlights_do_not_require_cues(self):
+    def test_visual_direction_is_freeform_not_a_theme_enum(self):
         plan = valid_plan()
-        plan["caption_highlights"] = {"enabled": False}
+        plan["visual_direction"] = (
+            "Switch among presenter, full-screen diagrams, and a screen recording "
+            "when the narration calls for it."
+        )
         self.assertEqual(validator.validate(plan), [])
 
-    def test_theme_and_source_format_are_required(self):
+    def test_source_and_render_spec_are_positive_project_data(self):
         plan = valid_plan()
-        plan.pop("mg_theme")
-        plan["source"]["fps"] = 30
+        plan["render_spec"]["width"] = 0
+        plan["source"]["fps"] = -1
         errors = validator.validate(plan)
-        self.assertTrue(any("mg_theme" in error for error in errors))
-        self.assertIn("source must be 1920x1080 at 60fps", errors)
+        self.assertTrue(any("render_spec.width" in error for error in errors))
+        self.assertTrue(any("source.fps" in error for error in errors))
 
-    def test_cues_must_cover_source_on_frame_grid(self):
+    def test_cues_use_the_approved_render_fps_grid(self):
         plan = valid_plan()
         plan["cues"][0]["end_seconds"] = 0.999
         plan["cues"][1]["start_seconds"] = 0.999
-        plan["cues"][1]["end_seconds"] = 1.5
         errors = validator.validate(plan)
-        self.assertTrue(any("60fps frame grid" in error for error in errors))
-        self.assertIn("cue timeline must end at source.duration_seconds", errors)
+        self.assertTrue(any("render fps frame grid" in error for error in errors))
 
-    def test_floating_overlay_requires_keyed_visual_and_policy(self):
+    def test_each_cue_requires_a_visual_prompt_and_semantic_evidence(self):
         plan = valid_plan()
-        plan["mg_theme"] = "floating-overlay"
+        plan["cues"][1].pop("visual_prompt")
+        plan["cues"][0]["spec"]["semantic_invariants"] = []
         errors = validator.validate(plan)
-        self.assertTrue(
-            any("floating-overlay MG cues must use" in error for error in errors)
-        )
+        self.assertTrue(any("visual_prompt" in error for error in errors))
+        self.assertTrue(any("semantic_invariants" in error for error in errors))
+
+    def test_plan_must_be_explicitly_approved(self):
+        plan = valid_plan()
+        plan["status"] = "draft"
+        self.assertIn("plan must be explicitly approved", validator.validate(plan))
 
 
 if __name__ == "__main__":

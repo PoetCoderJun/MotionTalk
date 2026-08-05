@@ -1,4 +1,4 @@
 interface:
   display_name: "MotionTalk"
-  short_description: "把精剪口播与 MG 动画自动编排成带字幕和包装的可交付成片"
-  default_prompt: "Use $motiontalk with my edited talking video and its final matching SRT to create a narration-driven motion-graphics video."
+  short_description: "用导演 Prompt 驱动口播视频 MG 与成片包装"
+  default_prompt: "Use $motiontalk with my edited talking video, final matching SRT, and output directory to create and execute a project-specific director plan."
