@@ -19,8 +19,8 @@ node <skill-root>/scripts/render_master.mjs \
 前提，也不要另行编码包装层或生成第二条整片。
 
 入口必须从 `project-dir/package.json` 加载项目本机安装的 Remotion，并使用
-Remotion 自管、与当前版本匹配的 Headless Shell。首次运行可由 Remotion 下载
-兼容版本；不要传入系统 Chrome 路径，也不要自行启动外部 Chrome。默认 `75%`
+Remotion 自管（Remotion-managed）、与当前版本匹配的 Headless Shell。首次运行可由
+Remotion 下载兼容版本；不要传入系统 Chrome 路径，也不要自行启动外部 Chrome。默认 `75%`
 并发会随机器核数换算；只有实测机器需要固定值时才传 `--concurrency`。
 
 ## 最终门禁

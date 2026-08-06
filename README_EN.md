@@ -2,10 +2,35 @@
 
 # MotionTalk
 
-Give MotionTalk an edited talking video and a timeline-accurate final SRT. The
-Agent first creates a director prompt. After one approval, it continuously
-builds the project-specific Remotion composition, renders evidence frames,
-produces the final video, and runs quality gates.
+Give an edited video and its final SRT to Codex, Kimi, or Claude Code, then say
+a few words about the result you want. MotionTalk reads the content, proposes a
+director plan, and completes production after one approval.
+
+## Just tell the Agent what you want
+
+You do not need to understand video engineering or fill in complex parameters.
+Give the assets to Codex / Kimi / Claude Code and describe the result as if you
+were talking to an editor: landscape or portrait, presenter placement, PPT or
+screen recording, caption feel, and any animation you want.
+
+```mermaid
+flowchart LR
+    A["Give the Agent<br/>video + SRT"] --> B["Describe the result<br/>or name a reference theme"]
+    B --> C["The Agent reads everything<br/>and proposes a director plan"]
+    C --> D["Approve once"]
+    D --> E["The Agent builds and checks<br/>the final video"]
+```
+
+For example:
+
+```text
+Use MotionTalk for this video and its subtitles. Make it portrait, keep the PPT
+centered, place the presenter at bottom right, limit captions to two lines, and
+keep the style clean. Show me the director plan first.
+```
+
+After approval, the Agent completes production, checks the result, and delivers
+the final video without repeatedly asking you to say “continue.”
 
 ## Reference themes
 
@@ -34,73 +59,22 @@ still follows the current assets and natural-language request.
 
 ## Core capabilities
 
-- **Content-aware director prompt**: understand the full narration and SRT
-  before choosing composition, animation, screen/PPT timing, and semantic
-  emphasis for this project instead of applying a fixed template;
-- **One approval, continuous delivery**: after director-plan approval, continue
-  through implementation, evidence frames, final render, and QA without repeated
-  interruptions;
-- **One master composition**: one `MasterComposition` packages the visuals while
-  source-video audio remains the only audio track, preventing duplicate speech,
-  drift, and competing timelines;
-- **Efficient local Remotion rendering**: use the project's Remotion packages, a
-  version-matched managed Headless Shell, and `75%` concurrency by default;
-  enable hardware encoding when available and retain a portable fallback;
-- **Semantic quality gates**: capture evidence against approved claims and
-  forbidden states, with explicit checks for the longest subtitle, safe zones,
-  layout, and final media parameters;
+- **Understand before designing**: the Agent reads the full video and subtitles
+  instead of adding random effects;
+- **One approval, continuous delivery**: after the director plan is approved,
+  production continues without repeated interruptions;
+- **Designed for each video**: visuals follow the content and your request, not
+  a fixed template;
+- **Checked before delivery**: captions, presenter proportions, occlusion,
+  source matching, and the final video are reviewed;
 - **Reference-theme prompt**: align quickly with four real examples, or skip
   themes entirely and design the current project in natural language.
-
-## Prompt-first
-
-MotionTalk does not ship a heavy Remotion template or encode composition,
-dimensions, progress height, typography ratios, or animation as global modes.
-
-Presenter overlays, full-screen MG with a presenter window, and switching
-between presenter and screen recording are prompt-level visual choices. Each
-project implements only its approved direction.
-
-```text
-Edited video + final SRT
-  → Director prompt and semantic invariants
-  → One user approval
-  → Project-specific Remotion composition
-  → Final render + renderStill evidence + quality gates
-  → Final packaged video
-```
-
-MotionTalk does not run ASR, remove mistakes or pauses, or recut the source.
-The input video remains the sole timeline, semantic, and final-audio source.
 
 ## Install
 
 ```bash
 npx skills add PoetCoderJun/MotionTalk
 ```
-
-## Use
-
-```text
-Use $motiontalk with:
-- video: /data/talking-video.mp4
-- subtitles: /data/final.srt
-- output_dir: /work/mg/output
-```
-
-Director-plan approval is the only interruption. Render spec, captions,
-chapters, progress, layout, safe zones, and animation are frozen in that
-project's plan.
-
-## Deterministic thin layer
-
-- `validate_plan.py` validates approval, project render spec, cue coverage,
-  visual prompts, and semantic invariants;
-- `render_master.mjs` uses official Remotion entry points, defaults to 75% of
-  available concurrency, loads Remotion from the project dependencies, uses a
-  Remotion-managed browser, and keeps a portable hardware fallback;
-- `validate_master.mjs` validates the final video against project data and
-  approved evidence.
 
 ## Development
 

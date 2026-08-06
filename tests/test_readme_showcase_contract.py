@@ -46,6 +46,39 @@ class ReadmeShowcaseContractTests(unittest.TestCase):
         for removed in ("## Render performance", "### macOS performance recommendation"):
             self.assertNotIn(removed, en)
 
+    def test_prompt_first_is_explained_as_a_low_barrier_conversation(self):
+        zh = (ROOT / "README.md").read_text(encoding="utf-8")
+        en = (ROOT / "README_EN.md").read_text(encoding="utf-8")
+
+        self.assertIn("## 和 AI 说几句话就行", zh)
+        self.assertIn("Codex / Kimi / Claude Code", zh)
+        self.assertIn("```mermaid", zh)
+        self.assertIn("确认一次", zh)
+        self.assertIn("最终成片", zh)
+        self.assertLess(zh.index("## 和 AI 说几句话就行"), zh.index("## 参考主题"))
+        self.assertLess(zh.index("## 和 AI 说几句话就行"), zh.index("## 核心能力"))
+
+        self.assertIn("## Just tell the Agent what you want", en)
+        self.assertIn("Codex / Kimi / Claude Code", en)
+        self.assertIn("```mermaid", en)
+        self.assertNotIn("## Prompt-first", zh)
+        self.assertNotIn("## Prompt-first", en)
+        for technical in (
+            "## 确定性薄层",
+            "Headless Shell",
+            "MasterComposition",
+            "`75%`",
+        ):
+            self.assertNotIn(technical, zh)
+        for technical in (
+            "## Deterministic thin layer",
+            "semantic invariants",
+            "Headless Shell",
+            "MasterComposition",
+            "`75%`",
+        ):
+            self.assertNotIn(technical, en)
+
     def test_showcase_assets_exist_and_stay_lightweight(self):
         for relative_path in SHOWCASE_ASSETS:
             asset = ROOT / relative_path
