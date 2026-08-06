@@ -21,9 +21,9 @@ proposes a director plan → Receive the final video → Optional adjustments**
 For example:
 
 ```text
-Use MotionTalk for this video and its subtitles. Make it portrait, keep the PPT
-centered, place the presenter at bottom right, limit captions to two lines, and
-keep the style clean. Show me the director plan first.
+Use MotionTalk for this video and its subtitles. Switch or interweave the
+presenter, full-screen MG, and other video B-roll wherever you think it best
+serves the content.
 ```
 
 After approval, the Agent completes production, checks the result, and delivers

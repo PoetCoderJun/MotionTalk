@@ -61,6 +61,11 @@ class ReadmeShowcaseContractTests(unittest.TestCase):
         self.assertIn("最终成片", zh)
         self.assertIn("调整（可选）", zh)
         self.assertIn(FLOW_ASSETS["zh"], zh)
+        self.assertIn(
+            "人物、全屏 MG 与其它视频b-roll素材按内容在你觉得合适的时候切换或者交错",
+            zh,
+        )
+        self.assertNotIn("字幕最多两行；整体简洁一点。先给我看导演方案。", zh)
         self.assertLess(zh.index("## 和 AI 说几句话就行"), zh.index("## 参考主题"))
         self.assertLess(zh.index("## 和 AI 说几句话就行"), zh.index("## 核心能力"))
 
@@ -68,6 +73,8 @@ class ReadmeShowcaseContractTests(unittest.TestCase):
         self.assertIn("Codex / Kimi / Claude Code", en)
         self.assertIn("Optional adjustments", en)
         self.assertIn(FLOW_ASSETS["en"], en)
+        self.assertIn("presenter, full-screen MG, and other video B-roll", en)
+        self.assertNotIn("Show me the director plan first.", en)
         self.assertNotIn("```mermaid", zh)
         self.assertNotIn("```mermaid", en)
         self.assertNotIn("## Prompt-first", zh)
