@@ -3,12 +3,16 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SHOWCASE_ASSETS = (
+THEME_ASSETS = (
     "assets/readme/theme-floating-overlay.webp",
     "assets/readme/theme-presenter-window.webp",
     "assets/readme/theme-switching.webp",
     "assets/readme/theme-ppt-focus-portrait.webp",
 )
+FLOW_ASSETS = {
+    "zh": "assets/readme/motiontalk-flow-zh.png",
+    "en": "assets/readme/motiontalk-flow-en.png",
+}
 
 
 class ReadmeShowcaseContractTests(unittest.TestCase):
@@ -28,7 +32,7 @@ class ReadmeShowcaseContractTests(unittest.TestCase):
             self.assertIn(name, zh)
             self.assertIn(name, en)
 
-        for asset in SHOWCASE_ASSETS:
+        for asset in THEME_ASSETS:
             self.assertIn(asset, zh)
             self.assertIn(asset, en)
 
@@ -52,15 +56,20 @@ class ReadmeShowcaseContractTests(unittest.TestCase):
 
         self.assertIn("## 和 AI 说几句话就行", zh)
         self.assertIn("Codex / Kimi / Claude Code", zh)
-        self.assertIn("```mermaid", zh)
-        self.assertIn("确认一次", zh)
+        self.assertIn("给 AI 视频和字幕，说几句想要的效果", zh)
+        self.assertIn("AI 给出导演方案", zh)
         self.assertIn("最终成片", zh)
+        self.assertIn("调整（可选）", zh)
+        self.assertIn(FLOW_ASSETS["zh"], zh)
         self.assertLess(zh.index("## 和 AI 说几句话就行"), zh.index("## 参考主题"))
         self.assertLess(zh.index("## 和 AI 说几句话就行"), zh.index("## 核心能力"))
 
         self.assertIn("## Just tell the Agent what you want", en)
         self.assertIn("Codex / Kimi / Claude Code", en)
-        self.assertIn("```mermaid", en)
+        self.assertIn("Optional adjustments", en)
+        self.assertIn(FLOW_ASSETS["en"], en)
+        self.assertNotIn("```mermaid", zh)
+        self.assertNotIn("```mermaid", en)
         self.assertNotIn("## Prompt-first", zh)
         self.assertNotIn("## Prompt-first", en)
         for technical in (
@@ -80,7 +89,7 @@ class ReadmeShowcaseContractTests(unittest.TestCase):
             self.assertNotIn(technical, en)
 
     def test_showcase_assets_exist_and_stay_lightweight(self):
-        for relative_path in SHOWCASE_ASSETS:
+        for relative_path in (*THEME_ASSETS, *FLOW_ASSETS.values()):
             asset = ROOT / relative_path
             self.assertTrue(asset.is_file(), relative_path)
             self.assertLess(asset.stat().st_size, 350_000, relative_path)

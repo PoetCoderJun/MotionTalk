@@ -13,13 +13,10 @@ Give the assets to Codex / Kimi / Claude Code and describe the result as if you
 were talking to an editor: landscape or portrait, presenter placement, PPT or
 screen recording, caption feel, and any animation you want.
 
-```mermaid
-flowchart LR
-    A["Give the Agent<br/>video + SRT"] --> B["Describe the result<br/>or name a reference theme"]
-    B --> C["The Agent reads everything<br/>and proposes a director plan"]
-    C --> D["Approve once"]
-    D --> E["The Agent builds and checks<br/>the final video"]
-```
+**Give the Agent your video and subtitles, then describe the result → The Agent
+proposes a director plan → Receive the final video → Optional adjustments**
+
+![MotionTalk workflow: describe the desired result, review the director plan, receive the final video, and adjust if needed](assets/readme/motiontalk-flow-en.png)
 
 For example:
 
@@ -30,7 +27,8 @@ keep the style clean. Show me the director plan first.
 ```
 
 After approval, the Agent completes production, checks the result, and delivers
-the final video without repeatedly asking you to say “continue.”
+the final video. Stop when it feels right, or describe any adjustments in plain
+language.
 
 ## Reference themes
 
