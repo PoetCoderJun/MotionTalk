@@ -6,6 +6,34 @@
 完整理解内容后，先生成导演 Prompt；用户一次批准后，连续完成项目专属的
 Remotion 制作、证据抽帧、正式渲染和质量验收。
 
+## 核心能力
+
+- **内容驱动的导演 Prompt**：先完整理解口播与字幕，再为当前项目决定构图、
+  动画、录屏/PPT 出场时机和语义高亮，不套固定模板；
+- **一次批准，连续交付**：导演计划确认后，不再反复打断，连续完成工程、证据
+  抽帧、正式成片和质量验收；
+- **单一主合成**：一个 `MasterComposition` 完成画面包装，源视频音频是唯一
+  音轨，避免重复人声、漂移和多时间线；
+- **本机 Remotion 高效渲染**：使用项目安装的 Remotion、版本匹配的自管
+  Headless Shell 和默认 `75%` 并发；硬件编码可用时启用，不可用时跨平台回退；
+- **语义级质量门禁**：按批准的论点与禁区抽取证据帧，并重点检查最长字幕、
+  安全区、布局和最终媒体参数；
+- **可复用 Prompt 主题**：主题保存比例、层级和验收规则，而不是复制一套僵硬
+  代码模板；已包含竖屏 `PPT Focus Portrait` 参考。
+
+## 样片截图
+
+以下画面来自一次真实的 9:16 交付，展示同一主题在开场身份花字、最长双行字幕
+和结尾收束三个时刻的表现。
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/readme/ppt-focus-opening.webp" alt="开场身份花字与 PPT 主视觉" width="240"><br><sub>开场：PPT 主视觉 + 轻量身份花字</sub></td>
+    <td align="center"><img src="assets/readme/ppt-focus-subtitle.webp" alt="最长双行字幕与语义高亮" width="240"><br><sub>正文：自适应双行字幕 + 语义高亮</sub></td>
+    <td align="center"><img src="assets/readme/ppt-focus-ending.webp" alt="结尾收束与章节进度" width="240"><br><sub>结尾：视觉收束 + 章节进度</sub></td>
+  </tr>
+</table>
+
 ## Prompt-first
 
 MotionTalk 不附带一套沉重的 Remotion 模板，也不把构图、尺寸、进度条高度、

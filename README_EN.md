@@ -7,6 +7,40 @@ Agent first creates a director prompt. After one approval, it continuously
 builds the project-specific Remotion composition, renders evidence frames,
 produces the final video, and runs quality gates.
 
+## Core capabilities
+
+- **Content-aware director prompt**: understand the full narration and SRT
+  before choosing composition, animation, screen/PPT timing, and semantic
+  emphasis for this project instead of applying a fixed template;
+- **One approval, continuous delivery**: after director-plan approval, continue
+  through implementation, evidence frames, final render, and QA without repeated
+  interruptions;
+- **One master composition**: one `MasterComposition` packages the visuals while
+  source-video audio remains the only audio track, preventing duplicate speech,
+  drift, and competing timelines;
+- **Efficient local Remotion rendering**: use the project's Remotion packages, a
+  version-matched managed Headless Shell, and `75%` concurrency by default;
+  enable hardware encoding when available and retain a portable fallback;
+- **Semantic quality gates**: capture evidence against approved claims and
+  forbidden states, with explicit checks for the longest subtitle, safe zones,
+  layout, and final media parameters;
+- **Reusable prompt themes**: preserve proportions, hierarchy, and evidence
+  rules without cloning a rigid code template; a portrait `PPT Focus Portrait`
+  reference is included.
+
+## Sample frames
+
+These frames come from a real 9:16 delivery and show the same theme at the
+opening identity treatment, the longest two-line caption, and the closing beat.
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/readme/ppt-focus-opening.webp" alt="Opening identity type with PPT as the primary visual" width="240"><br><sub>Opening: PPT focus + lightweight identity type</sub></td>
+    <td align="center"><img src="assets/readme/ppt-focus-subtitle.webp" alt="Longest two-line caption with semantic highlights" width="240"><br><sub>Body: self-fitting two-line caption + highlights</sub></td>
+    <td align="center"><img src="assets/readme/ppt-focus-ending.webp" alt="Closing composition with chapter progress" width="240"><br><sub>Closing: visual resolution + chapter progress</sub></td>
+  </tr>
+</table>
+
 ## Prompt-first
 
 MotionTalk does not ship a heavy Remotion template or encode composition,
