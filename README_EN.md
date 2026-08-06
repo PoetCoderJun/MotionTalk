@@ -7,6 +7,29 @@ Agent first creates a director prompt. After one approval, it continuously
 builds the project-specific Remotion composition, renders evidence frames,
 produces the final video, and runs quality gates.
 
+## Four themes
+
+The four themes define the primary relationship between the presenter, MG,
+screen recording, or PPT. They are reusable director-prompt references rather
+than fixed Remotion templates. Every frame below comes from a real local
+delivery.
+
+<table>
+  <tr>
+    <td width="50%"><img src="assets/readme/theme-floating-overlay.webp" alt="Full-screen presenter with floating MG sample"><br><strong>1. floating-overlay</strong><br><sub>Keep the presenter or recording full-screen and add only lightweight MG in safe zones.</sub></td>
+    <td width="50%"><img src="assets/readme/theme-presenter-window.webp" alt="Full-screen MG with presenter window sample"><br><strong>2. mg-with-presenter-window</strong><br><sub>Make MG, screenshots, or recordings primary while the presenter remains in a circle or rectangle.</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="assets/readme/theme-switching.webp" alt="Presenter and screen recording switching sample"><br><strong>3. switching</strong><br><sub>Switch between presenter, full-screen MG, and recordings so each state stays readable.</sub></td>
+    <td width="50%"><img src="assets/readme/theme-ppt-focus-portrait.webp" alt="Portrait PPT focus sample"><br><strong>4. PPT Focus Portrait</strong><br><sub>Use PPT as the portrait primary visual, with self-fitting captions below, a bottom-right presenter, and progress.</sub></td>
+  </tr>
+</table>
+
+See [`references/05-mg-themes.md`](references/05-mg-themes.md) for the first
+three selection rules and
+[`references/04-theme-ppt-focus-portrait.md`](references/04-theme-ppt-focus-portrait.md)
+for the portrait PPT proportions and evidence gates.
+
 ## Core capabilities
 
 - **Content-aware director prompt**: understand the full narration and SRT
@@ -24,22 +47,8 @@ produces the final video, and runs quality gates.
 - **Semantic quality gates**: capture evidence against approved claims and
   forbidden states, with explicit checks for the longest subtitle, safe zones,
   layout, and final media parameters;
-- **Reusable prompt themes**: preserve proportions, hierarchy, and evidence
-  rules without cloning a rigid code template; a portrait `PPT Focus Portrait`
-  reference is included.
-
-## Sample frames
-
-These frames come from a real 9:16 delivery and show the same theme at the
-opening identity treatment, the longest two-line caption, and the closing beat.
-
-<table>
-  <tr>
-    <td align="center"><img src="assets/readme/ppt-focus-opening.webp" alt="Opening identity type with PPT as the primary visual" width="240"><br><sub>Opening: PPT focus + lightweight identity type</sub></td>
-    <td align="center"><img src="assets/readme/ppt-focus-subtitle.webp" alt="Longest two-line caption with semantic highlights" width="240"><br><sub>Body: self-fitting two-line caption + highlights</sub></td>
-    <td align="center"><img src="assets/readme/ppt-focus-ending.webp" alt="Closing composition with chapter progress" width="240"><br><sub>Closing: visual resolution + chapter progress</sub></td>
-  </tr>
-</table>
+- **Reusable prompt themes**: preserve visual relationships, proportions, and
+  evidence rules across four themes without cloning a rigid code template.
 
 ## Prompt-first
 
@@ -90,54 +99,6 @@ project's plan.
   Remotion-managed browser, and keeps a portable hardware fallback;
 - `validate_master.mjs` validates the final video against project data and
   approved evidence.
-
-## Render performance
-
-The default command is portable across macOS, Windows, and Linux. It uses
-`75%` concurrency and `if-possible` hardware acceleration. If the device or
-execution environment cannot access a hardware encoder, Remotion falls back to
-software encoding instead of treating a platform-specific encoder as a
-prerequisite.
-
-The renderer loads `@remotion/bundler` and `@remotion/renderer` from the local
-project and uses a version-matched, Remotion-managed Headless Shell. The first
-run may download that compatible browser. Do not pass a system Chrome path or
-delegate browser version management to an external Chrome installation.
-
-## Reusable theme
-
-`PPT Focus Portrait` is a prompt reference for a portrait composition with the
-PPT as the primary visual, a self-fitting two-line subtitle rail below it, a
-bottom-right presenter, lightweight lower-left display type, and bottom chapter
-progress. It preserves proportions and evidence gates without shipping a fixed
-Remotion template. See
-[`references/04-theme-ppt-focus-portrait.md`](references/04-theme-ppt-focus-portrait.md).
-
-### macOS performance recommendation (optional)
-
-Apple Silicon users can first confirm that FFmpeg exposes VideoToolbox:
-
-```bash
-ffmpeg -hide_banner -encoders | grep h264_videotoolbox
-```
-
-After verifying that the current terminal can access the system encoder
-service, hardware encoding can be made fail-fast with an explicit bitrate:
-
-```bash
-node scripts/render_master.mjs \
-  --project-dir "$output_dir/remotion" \
-  --props "$output_dir/master-props.json" \
-  --output "$output_dir/final/video-packaged.mp4" \
-  --concurrency 75% \
-  --offthread-video-threads 4 \
-  --hardware-acceleration required \
-  --video-bitrate 16M
-```
-
-Use `required` only on a macOS environment where the encoder and permissions
-have already been verified. Other platforms, restricted sandboxes, and
-unverified machines should keep the default `if-possible` behavior.
 
 ## Development
 

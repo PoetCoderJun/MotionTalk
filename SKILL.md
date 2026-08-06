@@ -31,16 +31,17 @@ MotionTalk 是一个 **prompt-first** 的口播视频后期工作流。它不做
 
 ## Prompt 驱动边界
 
-- 人物全屏叠加 MG、全屏 MG 配人物窗、人物与录屏切换，只是导演 Prompt
-  可采用的构图语言，**不是代码枚举**，也不要求 Skill 预置三套实现。
+- 根据内容选择 `floating-overlay`、`mg-with-presenter-window`、`switching` 或
+  `PPT Focus Portrait`。前三种读取
+  [references/05-mg-themes.md](references/05-mg-themes.md)，竖屏 PPT 主题读取
+  [references/04-theme-ppt-focus-portrait.md](references/04-theme-ppt-focus-portrait.md)。
+  这些都是导演 Prompt 参考，**不是代码枚举**，也不要求 Skill 预置四套实现。
 - 分辨率、帧率、字幕样式、章节、进度、字体比例、位置、动画和安全区全部由
   当次素材、平台、样例及用户要求决定，并写入批准版计划。
 - Skill 不携带 Remotion 工程模板。批准后在 `output_dir/remotion/` 创建只服务
   当前计划的最小项目；不得把项目视觉差异反向膨胀成 Skill 参数体系。
-- 用户明确选择 PPT 主视觉竖屏主题时，读取
-  [references/04-theme-ppt-focus-portrait.md](references/04-theme-ppt-focus-portrait.md)
-  作为导演 Prompt 参考。主题参考是比例与验收规则，**不是代码模式**；仍需按
-  当次画布、PPT、字幕和人物素材重算布局。
+- 主题参考保存构图意图、比例关系与验收规则，**不是代码模式**；仍需按当次
+  画布、字幕、人物和录屏/PPT 素材重算布局。
 - 同一项目只保留一个 `MasterComposition`。底片、唯一主音频、字幕、MG 和
   包装在同一 Remotion 时间线中渲染；文字直接使用 DOM/SVG。
 - 使用相对布局、画布尺寸或计划传入的数据计算几何；禁止把某个项目的尺寸、

@@ -22,8 +22,9 @@
   `package_direction`；
 - 章节、进度、字幕、字体、花字和动画均是导演决策，不使用 Skill 固定数值。
 
-构图可参考人物全屏叠加、全屏 MG 配人物窗、人物与录屏切换，但这些是自然语言
-设计选择，不是代码模式。
+规划 `floating-overlay`、`mg-with-presenter-window` 或 `switching` 时，读取
+[05-mg-themes.md](05-mg-themes.md)，把选定主题的视觉关系和风险写入 Prompt；
+这些是自然语言设计选择，不是代码模式。
 
 用户明确要求“录屏或 PPT 居中、纯色背景、右下人物、PPT 下字幕”的竖屏版面时，
 读取 [04-theme-ppt-focus-portrait.md](04-theme-ppt-focus-portrait.md)，将其中比例、

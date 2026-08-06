@@ -45,7 +45,7 @@ class RenderPerformanceContractTests(unittest.TestCase):
         self.assertIn("Remotion-managed", docs)
         self.assertIn("不要传入系统 Chrome", docs)
 
-    def test_videotoolbox_is_optional_readme_guidance_only(self):
+    def test_videotoolbox_is_not_a_documented_requirement(self):
         readme = (SKILL_ROOT / "README.md").read_text(encoding="utf-8")
         readme_en = (SKILL_ROOT / "README_EN.md").read_text(encoding="utf-8")
         operational_docs = "\n".join(
@@ -58,10 +58,10 @@ class RenderPerformanceContractTests(unittest.TestCase):
             )
         )
 
-        self.assertIn("macOS 性能建议", readme)
-        self.assertIn("h264_videotoolbox", readme)
-        self.assertIn("macOS performance recommendation", readme_en)
-        self.assertIn("h264_videotoolbox", readme_en)
+        self.assertNotIn("macOS 性能建议", readme)
+        self.assertNotIn("h264_videotoolbox", readme)
+        self.assertNotIn("macOS performance recommendation", readme_en)
+        self.assertNotIn("h264_videotoolbox", readme_en)
         self.assertNotIn("VideoToolbox", operational_docs)
         self.assertNotIn("h264_videotoolbox", operational_docs)
 
