@@ -22,13 +22,10 @@
   `package_direction`；
 - 章节、进度、字幕、字体、花字和动画均是导演决策，不使用 Skill 固定数值。
 
-规划 `floating-overlay`、`mg-with-presenter-window` 或 `switching` 时，读取
-[05-mg-themes.md](05-mg-themes.md)，把选定主题的视觉关系和风险写入 Prompt；
-这些是自然语言设计选择，不是代码模式。
-
-用户明确要求“录屏或 PPT 居中、纯色背景、右下人物、PPT 下字幕”的竖屏版面时，
-读取 [04-theme-ppt-focus-portrait.md](04-theme-ppt-focus-portrait.md)，将其中比例、
-视觉层级和证据门禁写入本项目 Prompt；不要复制示例文案或把主题注册为验证器枚举。
+用户点名参考主题或要求快速生成相似效果时，读取
+[04-reference-theme-prompt.md](04-reference-theme-prompt.md)，把相关视觉关系、比例
+和风险吸收到本项目 Prompt。用户直接用自然语言描述效果时，按描述设计，不要求
+先选择主题。不要复制参考文案，也不要把主题注册为验证器枚举。
 
 ## 产物
 

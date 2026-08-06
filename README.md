@@ -6,10 +6,12 @@
 完整理解内容后，先生成导演 Prompt；用户一次批准后，连续完成项目专属的
 Remotion 制作、证据抽帧、正式渲染和质量验收。
 
-## 四种主题
+## 参考主题
 
-四种主题决定人物、MG、录屏或 PPT 的主要视觉关系。它们是可复用的导演 Prompt
-参考，不是固定 Remotion 模板；以下均为本地真实交付样片。
+下面四个效果是独立参考 Prompt 中提供的起点。点名其中一个，可以
+**快速生成相似视频**；它们不是四选一，也不是 MotionTalk 的能力边界。实际想要
+什么布局、字幕、人物、录屏或动画效果，都可以直接用自然语言和 AI 说。以下均为
+真实交付样片。
 
 <table>
   <tr>
@@ -22,10 +24,9 @@ Remotion 制作、证据抽帧、正式渲染和质量验收。
   </tr>
 </table>
 
-前三种的选择规则见
-[`references/05-mg-themes.md`](references/05-mg-themes.md)；竖屏 PPT 的比例与
-验收规则见
-[`references/04-theme-ppt-focus-portrait.md`](references/04-theme-ppt-focus-portrait.md)。
+四个效果的参考指引统一放在
+[`references/04-reference-theme-prompt.md`](references/04-reference-theme-prompt.md)。
+它只帮助 AI 快速理解方向；最终导演计划仍由当前素材和自然语言要求决定。
 
 ## 核心能力
 
@@ -39,8 +40,8 @@ Remotion 制作、证据抽帧、正式渲染和质量验收。
   Headless Shell 和默认 `75%` 并发；硬件编码可用时启用，不可用时跨平台回退；
 - **语义级质量门禁**：按批准的论点与禁区抽取证据帧，并重点检查最长字幕、
   安全区、布局和最终媒体参数；
-- **可复用 Prompt 主题**：四种主题保存视觉关系、比例和验收规则，而不是复制
-  一套僵硬代码模板。
+- **参考主题 Prompt**：用四个真实效果快速对齐方向，也可以完全跳过主题，直接
+  用自然语言设计当前项目。
 
 ## Prompt-first
 

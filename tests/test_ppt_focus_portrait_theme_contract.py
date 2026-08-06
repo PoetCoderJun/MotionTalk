@@ -7,7 +7,7 @@ SKILL_ROOT = Path(__file__).resolve().parents[1]
 
 class PptFocusPortraitThemeContractTests(unittest.TestCase):
     def setUp(self):
-        self.theme_path = SKILL_ROOT / "references" / "04-theme-ppt-focus-portrait.md"
+        self.theme_path = SKILL_ROOT / "references" / "04-reference-theme-prompt.md"
 
     def test_theme_is_a_prompt_reference_not_a_code_mode(self):
         self.assertTrue(self.theme_path.exists())
@@ -39,8 +39,8 @@ class PptFocusPortraitThemeContractTests(unittest.TestCase):
         planning = (SKILL_ROOT / "references" / "01-plan.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn("04-theme-ppt-focus-portrait.md", skill)
-        self.assertIn("04-theme-ppt-focus-portrait.md", planning)
+        self.assertIn("04-reference-theme-prompt.md", skill)
+        self.assertIn("04-reference-theme-prompt.md", planning)
 
 
 if __name__ == "__main__":

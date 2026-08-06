@@ -16,8 +16,8 @@ class ReadmeShowcaseContractTests(unittest.TestCase):
         zh = (ROOT / "README.md").read_text(encoding="utf-8")
         en = (ROOT / "README_EN.md").read_text(encoding="utf-8")
 
-        self.assertLess(zh.index("## 四种主题"), zh.index("## 核心能力"))
-        self.assertLess(en.index("## Four themes"), en.index("## Core capabilities"))
+        self.assertLess(zh.index("## 参考主题"), zh.index("## 核心能力"))
+        self.assertLess(en.index("## Reference themes"), en.index("## Core capabilities"))
 
         for name in (
             "floating-overlay",
@@ -31,6 +31,11 @@ class ReadmeShowcaseContractTests(unittest.TestCase):
         for asset in SHOWCASE_ASSETS:
             self.assertIn(asset, zh)
             self.assertIn(asset, en)
+
+        self.assertIn("references/04-reference-theme-prompt.md", zh)
+        self.assertIn("references/04-reference-theme-prompt.md", en)
+        self.assertNotIn("references/05-mg-themes.md", zh)
+        self.assertNotIn("references/04-theme-ppt-focus-portrait.md", zh)
 
     def test_readmes_do_not_include_removed_performance_sections(self):
         zh = (ROOT / "README.md").read_text(encoding="utf-8")

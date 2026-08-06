@@ -31,11 +31,12 @@ MotionTalk 是一个 **prompt-first** 的口播视频后期工作流。它不做
 
 ## Prompt 驱动边界
 
-- 根据内容选择 `floating-overlay`、`mg-with-presenter-window`、`switching` 或
-  `PPT Focus Portrait`。前三种读取
-  [references/05-mg-themes.md](references/05-mg-themes.md)，竖屏 PPT 主题读取
-  [references/04-theme-ppt-focus-portrait.md](references/04-theme-ppt-focus-portrait.md)。
-  这些都是导演 Prompt 参考，**不是代码枚举**，也不要求 Skill 预置四套实现。
+- 用户点名 `floating-overlay`、`mg-with-presenter-window`、`switching`、
+  `PPT Focus Portrait`，或要求快速生成相似效果时，读取
+  [references/04-reference-theme-prompt.md](references/04-reference-theme-prompt.md)。
+  这是独立的参考 Prompt，只用于帮助快速理解相似效果，**不是代码枚举或必选项**。
+- 用户没有选主题时，直接根据自然语言、素材和样例设计；不得要求四选一。自然语言
+  要求与参考主题冲突时，以用户当前要求为准。
 - 分辨率、帧率、字幕样式、章节、进度、字体比例、位置、动画和安全区全部由
   当次素材、平台、样例及用户要求决定，并写入批准版计划。
 - Skill 不携带 Remotion 工程模板。批准后在 `output_dir/remotion/` 创建只服务

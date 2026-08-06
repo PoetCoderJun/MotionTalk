@@ -7,11 +7,13 @@ Agent first creates a director prompt. After one approval, it continuously
 builds the project-specific Remotion composition, renders evidence frames,
 produces the final video, and runs quality gates.
 
-## Four themes
+## Reference themes
 
-The four themes define the primary relationship between the presenter, MG,
-screen recording, or PPT. They are reusable director-prompt references rather
-than fixed Remotion templates. Every frame below comes from a real local
+The four effects below are starting points in one standalone reference prompt.
+Naming one can quickly produce a similar video, but they are not a required
+four-way choice or the boundary of MotionTalk. Describe the desired layout,
+captions, presenter, screen recording, or animation directly in natural
+language whenever you want a different result. Every frame is from a real local
 delivery.
 
 <table>
@@ -25,10 +27,10 @@ delivery.
   </tr>
 </table>
 
-See [`references/05-mg-themes.md`](references/05-mg-themes.md) for the first
-three selection rules and
-[`references/04-theme-ppt-focus-portrait.md`](references/04-theme-ppt-focus-portrait.md)
-for the portrait PPT proportions and evidence gates.
+All four guides live in
+[`references/04-reference-theme-prompt.md`](references/04-reference-theme-prompt.md).
+The prompt only helps the Agent understand a direction faster; the final plan
+still follows the current assets and natural-language request.
 
 ## Core capabilities
 
@@ -47,8 +49,8 @@ for the portrait PPT proportions and evidence gates.
 - **Semantic quality gates**: capture evidence against approved claims and
   forbidden states, with explicit checks for the longest subtitle, safe zones,
   layout, and final media parameters;
-- **Reusable prompt themes**: preserve visual relationships, proportions, and
-  evidence rules across four themes without cloning a rigid code template.
+- **Reference-theme prompt**: align quickly with four real examples, or skip
+  themes entirely and design the current project in natural language.
 
 ## Prompt-first
 
