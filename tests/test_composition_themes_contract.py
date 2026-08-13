@@ -6,7 +6,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class CompositionThemesContractTests(unittest.TestCase):
-    def test_skill_routes_all_four_reference_themes_through_one_document(self):
+    def test_skill_routes_all_five_reference_themes_through_one_document(self):
         skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
         themes_path = ROOT / "references" / "04-reference-theme-prompt.md"
 
@@ -24,6 +24,7 @@ class CompositionThemesContractTests(unittest.TestCase):
             "mg-with-presenter-window",
             "switching",
             "PPT Focus Portrait",
+            "Close Evidence Portrait",
         ):
             self.assertIn(name, themes)
 

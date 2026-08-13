@@ -32,10 +32,11 @@ MotionTalk 是一个 **prompt-first** 的口播视频后期工作流。它不做
 ## Prompt 驱动边界
 
 - 用户点名 `floating-overlay`、`mg-with-presenter-window`、`switching`、
-  `PPT Focus Portrait`，或要求快速生成相似效果时，读取
+  `PPT Focus Portrait`、`Close Evidence Portrait`、`近景证据流`，或要求快速生成
+  相似效果时，读取
   [references/04-reference-theme-prompt.md](references/04-reference-theme-prompt.md)。
   这是独立的参考 Prompt，只用于帮助快速理解相似效果，**不是代码枚举或必选项**。
-- 用户没有选主题时，直接根据自然语言、素材和样例设计；不得要求四选一。自然语言
+- 用户没有选主题时，直接根据自然语言、素材和样例设计；不得要求用户先选主题。自然语言
   要求与参考主题冲突时，以用户当前要求为准。
 - 分辨率、帧率、字幕样式、章节、进度、字体比例、位置、动画和安全区全部由
   当次素材、平台、样例及用户要求决定，并写入批准版计划。
