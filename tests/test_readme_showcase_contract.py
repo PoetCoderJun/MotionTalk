@@ -8,6 +8,7 @@ THEME_ASSETS = (
     "assets/readme/theme-presenter-window.webp",
     "assets/readme/theme-switching.webp",
     "assets/readme/theme-ppt-focus-portrait.webp",
+    "assets/readme/theme-close-evidence-portrait.webp",
 )
 FLOW_ASSETS = {
     "zh": "assets/readme/motiontalk-flow-zh.png",
@@ -16,7 +17,7 @@ FLOW_ASSETS = {
 
 
 class ReadmeShowcaseContractTests(unittest.TestCase):
-    def test_bilingual_readmes_show_four_themes_before_capabilities(self):
+    def test_bilingual_readmes_show_five_themes_before_capabilities(self):
         zh = (ROOT / "README.md").read_text(encoding="utf-8")
         en = (ROOT / "README_EN.md").read_text(encoding="utf-8")
 
@@ -28,6 +29,7 @@ class ReadmeShowcaseContractTests(unittest.TestCase):
             "mg-with-presenter-window",
             "switching",
             "PPT Focus Portrait",
+            "Close Evidence Portrait",
         ):
             self.assertIn(name, zh)
             self.assertIn(name, en)

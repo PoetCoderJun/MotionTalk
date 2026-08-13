@@ -32,12 +32,13 @@ language.
 
 ## Reference themes
 
-The four effects below are starting points in one standalone reference prompt.
+The five effects below are starting points in one standalone reference prompt.
 Naming one can quickly produce a similar video, but they are not a required
-four-way choice or the boundary of MotionTalk. Describe the desired layout,
+five-way choice or the boundary of MotionTalk. Describe the desired layout,
 captions, presenter, screen recording, or animation directly in natural
-language whenever you want a different result. Every frame is from a real local
-delivery.
+language whenever you want a different result. The first four visuals come from
+real local deliveries; the fifth is the frozen composition guide for the current
+primary style.
 
 <table>
   <tr>
@@ -48,9 +49,12 @@ delivery.
     <td width="50%"><img src="assets/readme/theme-switching.webp" alt="Presenter and screen recording switching sample"><br><strong>3. switching</strong><br><sub>Switch between presenter, full-screen MG, and recordings so each state stays readable.</sub></td>
     <td width="50%"><img src="assets/readme/theme-ppt-focus-portrait.webp" alt="Portrait PPT focus sample"><br><strong>4. PPT Focus Portrait</strong><br><sub>Use PPT as the portrait primary visual, with self-fitting captions below, a bottom-right presenter, and progress.</sub></td>
   </tr>
+  <tr>
+    <td colspan="2"><img src="assets/readme/theme-close-evidence-portrait.webp" alt="Three portrait Close Evidence states: intimate explanation, evidence zoom, and full-screen proof"><br><strong>5. Close Evidence Portrait / 近景证据流 (current primary style)</strong><br><sub>This is my primary theme for recent videos: keep the evidence card near the portrait center with up to a 5% upward optical correction, let the close presenter overhang above it, expand key proof beyond the default frame, and keep captions plus chapter progress lightweight at the bottom.</sub></td>
+  </tr>
 </table>
 
-All four guides live in
+All five guides live in
 [`references/04-reference-theme-prompt.md`](references/04-reference-theme-prompt.md).
 The prompt only helps the Agent understand a direction faster; the final plan
 still follows the current assets and natural-language request.
@@ -65,7 +69,7 @@ still follows the current assets and natural-language request.
   a fixed template;
 - **Checked before delivery**: captions, presenter proportions, occlusion,
   source matching, and the final video are reviewed;
-- **Reference-theme prompt**: align quickly with four real examples, or skip
+- **Reference-theme prompt**: align quickly with five reference effects, or skip
   themes entirely and design the current project in natural language.
 
 ## Install
