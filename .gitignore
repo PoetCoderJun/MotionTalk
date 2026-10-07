@@ -1,8 +1,9 @@
 .DS_Store
 
 # Local dependencies and renderer caches
-node_modules/
-.remotion/
+node_modules
+.hyperframes/
+render.log
 __pycache__/
 *.py[cod]
 
@@ -20,3 +21,5 @@ mg-output/
 .env.*
 *.pem
 *.key
+
+.renders/

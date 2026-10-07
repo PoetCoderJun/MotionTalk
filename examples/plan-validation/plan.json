@@ -3,11 +3,8 @@
   "status": "approved",
   "approved": true,
   "source": {
-    "video": "synthetic-placeholder.mp4",
+    "audio": "synthetic-placeholder.wav",
     "subtitles": "synthetic-placeholder.srt",
-    "width": 640,
-    "height": 360,
-    "fps": 30,
     "duration_seconds": 2
   },
   "render_spec": {
@@ -22,37 +19,23 @@
       "id": "cue-a",
       "start_seconds": 0,
       "end_seconds": 1,
-      "visual_prompt": "Display synthetic label A.",
-      "spec": {
-        "semantic_invariants": [
-          {
-            "id": "label-a",
-            "assertion": "Label A is visible.",
-            "proof_moment": 0.5,
-            "forbidden": [
-              "wrong label"
-            ]
-          }
-        ]
-      }
+      "visual_prompt": "Display synthetic label A."
     },
     {
       "id": "cue-b",
       "start_seconds": 1,
       "end_seconds": 2,
-      "visual_prompt": "Display synthetic label B.",
-      "spec": {
-        "semantic_invariants": [
-          {
-            "id": "label-b",
-            "assertion": "Label B is visible.",
-            "proof_moment": 1.5,
-            "forbidden": [
-              "wrong label"
-            ]
-          }
-        ]
-      }
+      "visual_prompt": "Display synthetic label B."
     }
-  ]
+  ],
+  "audio_preparation": {
+    "trim_breaths": "no"
+  },
+  "creative_brief": {
+    "layout": "landscape full-screen text",
+    "idea": "Show A then B",
+    "materials": "none; synthesized sound and DOM visuals",
+    "style": "clear light typography on dark background",
+    "references": []
+  }
 }

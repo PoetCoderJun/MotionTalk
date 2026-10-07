@@ -1,44 +1,40 @@
 # MotionTalk: an inspectable Agent Harness case study
 
-[中文](harness-case-study.md) · [Back to the project](../README_EN.md)
+[中文](harness-case-study.md) · [Project](../README.md)
 
-An Agent can propose visuals and generate rendering code, but a successful render does not establish that it expresses the right content. MotionTalk leaves open-ended direction to the Agent and puts mechanically checkable constraints in small scripts.
+Turning audio into a social video combines open creative judgment with mechanical constraints. MotionTalk separates them so reviewers can inspect both the decisions and the code.
 
-## From intent to evidence
-
-| Stage | Reviewable artifact | Public implementation |
+| Stage | Reviewable record | Mechanical boundary |
 | --- | --- | --- |
-| Planning | Readable script, machine plan, visual intent and assertions for every cue | [Planning rules](../references/01-plan.md) |
-| Approval | `status=approved` and `approved=true`; replan after changes | [Stage routing](../SKILL.md) |
-| Structure | Positive render spec, frame grid, contiguous cues from zero through source duration, nonempty prompts and assertions | [validate_plan.py](../scripts/validate_plan.py) |
-| Build and inspect | One project composition; one renderer for video and evidence frames; Agent-authored semantic / visual / packaging checklists | [Build rules](../references/02-build.md), [render_master.mjs](../scripts/render_master.mjs) |
-| Delivery gate | Output metadata, evidence paths and times for assertions, passed checklist records, one MP4 in the final directory | [validate_master.mjs](../scripts/validate_master.mjs), [Delivery rules](../references/03-deliver.md) |
+| User intent | Explicit breath yes/no, progressive creative brief, optional materials/references | ASR wrapper requires a choice and a separate cloud-consent flag |
+| Audio preparation | Source SHA-256, listening-approved breath intervals, kept/deleted sample ranges | Reject wrong-source reviews, word overlap and overlapping cuts; remap words/SRT using the same deletion map |
+| Planning | Director script and approved machine plan | Positive dimensions/fps/duration, resolved brief, nonempty visual prompts, frame-grid contiguous cues |
+| Initialization | Audio-first editable composition, status=scaffold | Require decodable audio and matching duration; no presenter video; refuse nonempty project directories |
+| Production | Content-aware visuals and continuous preview evidence | Production renderer requires ready status and existing recorded evidence; smoke mode is explicitly synthetic |
+| Delivery | Render log/metrics, technical report, separate visual/listening review | Compare dimensions, fps, video/audio duration, H.264/AAC and one-MP4 delivery directory |
 
-The harness combines plans, state, tool entry points, evidence and acceptance contracts. Visual creation remains flexible; reference themes are not code enums.
+## Determinism and judgment
 
-## What is actually deterministic
+[prepare_audio.py](../scripts/prepare_audio.py) proposes unclassified word gaps, never auto-approved breaths. An Agent must listen and select suitable intervals. The script keeps 0.25 seconds by default only in approved breath gaps; no-trim keeps the timeline. It blocks cuts overlapping word timestamps, but inaccurate ASR timings can still expose speech. It cannot establish natural pacing or sound quality. SRT timestamps are rounded to milliseconds after sample-based mapping.
 
-`validate_plan.py` rejects unapproved plans, empty visual prompts, missing assertions, off-grid times and cue gaps / overlaps. It does not check whether source media exists or decodes, or whether the actual SRT matches; those are planning input checks. Approval fields do not authenticate a user, signature or approved revision, and inputs are not bound by hashes.
+[validate_plan.py](../scripts/validate_plan.py) checks plan structure and cue timing, not user identity, approval revision binding, media existence or visual meaning. [init_project.mjs](../scripts/init_project.mjs) then checks audio existence/decoding, duration and subtitle bounds. The initializer is a scaffold, not a complete creative result.
 
-`validate_master.mjs` compares output dimensions, frame rate and duration with plan / props (a three-frame duration tolerance), checks known codecs and audio presence. For numeric proof moments, recorded evidence times must be within one frame; every checklist record must be passed and its evidence file must exist. The final directory must contain only the specified MP4.
+[render_master.mjs](../scripts/render_master.mjs) reads Agent-authored production state and checks recorded evidence paths. It does not inspect evidence pixels or prove the review actually occurred. Hardware/software selection is explicit; dependency versions, worker count and seekable timelines make execution inspectable, but this does not promise byte-identical output across hardware.
 
-These are record and file checks. The validator does not interpret evidence pixels, verify that an image matches its reported time, establish audio provenance, or invoke the plan validator itself. Run plan validation first, then build, inspect frames and write checklists, then validate delivery. The report supports review; it is not a proof of visual correctness.
+[validate_master.mjs](../scripts/validate_master.mjs) checks output metadata with a three-frame timing tolerance and audio presence/duration. Its report explicitly says scope=technical and visual_review=not_assessed_by_this_validator. Visual understanding and listening remain separate, truthful review tasks. No signed approvals or whole-project hash binding are implemented.
 
-## Reproduce the smallest evidence
-
-From the repository root:
+## Reproduce
 
 ```bash
 python3 examples/plan-validation/run.py
 python3 -m unittest discover -s tests -v
-node scripts/render_master.mjs --help
-node scripts/validate_master.mjs --help
+python3 -m unittest discover -s scripts/tests -v
+node --test tests/*.test.mjs
+python3 examples/audio-only-smoke/run.py --output-dir /tmp/motiontalk-fresh-smoke --render
 ```
 
-The [synthetic example](../examples/plan-validation/README.md) checks only the plan contract. It reads no media, calls no models and downloads no dependencies. Existing tests cover approval, timeline, prompt and renderer interface contracts; they are not a full production render or visual evaluation. The four README images are existing visual evidence; their complete source videos and rendering projects are not bundled.
+The last command uses a generated tone and authored timestamps, no cloud ASR or private input. It requires pinned runtime dependencies, FFmpeg and local Chrome. It verifies that an audio-only composition can render, not creative quality, real ASR accuracy, natural breath selection or a cost/time benchmark. See [migration notes](audio-first-migration.md).
 
-## Transferable engineering ideas
+The transferable pattern is a clear decision record, narrow deterministic gates and separately evaluated Agent judgment. It can inform exploration in Work, Robotics or Finance; this media implementation does not establish enterprise deployments, robotics capability, financial performance or ROI.
 
-For Work, break “a correct summary” into source provenance, assertion evidence and editable delivery. The separation of planning, approval and evidence is worth exploring in Robotics and Finance, with their own safety constraints, environment feedback and domain evaluation. This media case does not establish robotics deployment, financial-system performance or enterprise ROI.
-
-Use and adaptation follow [CC BY-NC-SA 4.0](../LICENSE.md); commercial use requires prior written permission. Third-party materials retain their own rights.
+[CC BY-NC-SA 4.0](../LICENSE.md) remains unchanged; commercial use needs prior written permission. Third-party materials retain their rights.

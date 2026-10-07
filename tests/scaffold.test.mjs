@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {parseSrt,scaffold} from '../scripts/project_scaffold.mjs';
+import {checkMetadata} from '../scripts/validate_master.mjs';
+import {buildRenderArgs} from '../scripts/render_master.mjs';
+import {readFileSync} from 'node:fs';
+const plan=JSON.parse(readFileSync(new URL('../examples/plan-validation/plan.json',import.meta.url)));
+test('SRT validates malformed timestamps and escapes user text',()=>{assert.throws(()=>parseSrt(''));assert.throws(()=>parseSrt('1\n00:00:01,000 --> 00:00:00,000\nx'));const html=scaffold(plan,parseSrt('1\n00:00:00,000 --> 00:00:01,000\n<script>alert(1)</script>'));assert.match(html,/&lt;script&gt;/);assert.equal((html.match(/<audio /g)||[]).length,1);assert.doesNotMatch(html,/<video/);});
+test('caption outside audio timeline is rejected',()=>assert.throws(()=>scaffold(plan,[{start:0,end:3,text:'x'}])));
+test('technical check detects truncated audio independently of video',()=>{const m={streams:[{codec_type:'video',codec_name:'h264',width:640,height:360,avg_frame_rate:'30/1',duration:'2'},{codec_type:'audio',codec_name:'aac',duration:'2'}]};assert.ok(Object.values(checkMetadata(plan,m)).every(Boolean));m.streams[1].duration='1';assert.equal(checkMetadata(plan,m).audio_timeline,false);});
+test('software render is explicit and keeps deterministic strict settings',()=>{const args=buildRenderArgs({projectDir:'p',output:'o',fps:30,encoding:'software'});assert.ok(args.includes('--no-browser-gpu'));assert.ok(!args.includes('--gpu'));assert.ok(args.includes('--strict'));});

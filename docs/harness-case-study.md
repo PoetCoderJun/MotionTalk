@@ -1,44 +1,40 @@
-# MotionTalk：一个可审查的 Agent Harness 案例
+# MotionTalk：可检查的 Agent Harness 工程案例
 
-[English](harness-case-study.en.md) · [返回项目](../README.md)
+[English](harness-case-study.en.md) · [项目](../README.md)
 
-问题是：Agent 可以生成视觉方案和渲染代码，但“渲染成功”不能说明它表达了正确内容。MotionTalk 把开放式导演判断放在 Agent，把能机械检查的约束放在薄脚本里。
+音频到成片同时需要创意判断与机械约束。MotionTalk 将它们拆开，让人能检查决定、产物与脚本各自承担什么。
 
-## 从意图到证据
-
-| 阶段 | 留下什么 | 公开实现 |
+| 阶段 | 可审查记录 | 机械边界 |
 | --- | --- | --- |
-| 规划 | 人读脚本、机器计划、逐 cue 的视觉意图和验收断言 | [规划规则](../references/01-plan.md) |
-| 批准 | `status=approved` 与 `approved=true`；变更后重新规划 | [阶段路由](../SKILL.md) |
-| 结构检查 | 正数 render spec、帧网格、从 0 到源时长的连续 cue、非空 Prompt 与断言 | [validate_plan.py](../scripts/validate_plan.py) |
-| 制作与看帧 | 当前项目唯一 composition；同一渲染入口输出成片与证据帧；Agent 写语义/视觉/包装清单 | [制作规则](../references/02-build.md)、[render_master.mjs](../scripts/render_master.mjs) |
-| 交付门禁 | 成片元数据、每个断言的证据路径与时间、清单 passed 状态、最终目录只含一个 MP4 | [validate_master.mjs](../scripts/validate_master.mjs)、[交付规则](../references/03-deliver.md) |
+| 意图 | 明确气口 yes/no、渐进创意 brief、可选素材/参考 | ASR 入口要求选择及单独云授权 flag |
+| 音频 | 源 SHA-256、试听批准区间、采样保留/删除区间 | 拒绝错误源审核、词重叠和剪区重叠；字幕共用删除映射 |
+| 规划 | 导演脚本与批准机器计划 | 正数画布/帧率/时长、已解决 brief、非空视觉 prompt、连续帧网格 cue |
+| 初始化 | 音频优先可编辑工程、scaffold 状态 | 检查音频解码/时长与字幕边界；无需人物视频；不覆盖已有工程 |
+| 制作 | 内容视觉与连续预览证据 | production 要求 ready 和存在的证据路径；合成 smoke 模式明确区分 |
+| 交付 | 日志/渲染记录、技术报告、独立视觉/试听记录 | 尺寸/帧率、音频视频时长、H.264/AAC、单 MP4 目录 |
 
-这里的 Harness 是计划、状态、工具入口、证据与验收契约的组合。它没有把所有视觉创作变成固定参数，也没有把参考主题变成代码枚举。
+## 确定性与判断的边界
 
-## 哪些检查真正是确定性的
+[prepare_audio.py](../scripts/prepare_audio.py) 只建议未分类词间间隙，不自动批准气口。Agent 必须试听选择，脚本才把批准气口默认保留到 0.25 秒。不剪则保留时间线。程序阻止词级时间戳重叠，但 ASR 时间不准仍可能暴露语音，不能证明节奏自然或音质合格。采样映射后 SRT 舍入到毫秒。
 
-`validate_plan.py` 拒绝未批准计划、空视觉 Prompt、缺失断言、非帧网格时间点和 cue 缺口/重叠。它不检查源文件是否存在或可解码，也不验证实际 SRT 匹配；这些属于规划输入检查。审批字段不验证用户身份、签名或批准版本，输入也未绑定哈希。
+[validate_plan.py](../scripts/validate_plan.py) 检查结构与 cue 时间，不认证批准身份、不绑定批准版本、不检查媒体存在或视觉意义。[init_project.mjs](../scripts/init_project.mjs) 再检查音频解码、时长和字幕边界；生成的是 scaffold，不是完整创意成果。
 
-`validate_master.mjs` 检查成片与计划/props 的尺寸、帧率、时长是否一致（时长容差三帧），codec 是否已知、音频是否存在。对于数值 proof moment，它要求记录的证据时间在一帧容差内，同时要求每条清单记录 passed 且证据文件存在。最终目录必须只有指定 MP4。
+[render_master.mjs](../scripts/render_master.mjs) 读取 Agent 记录的制作状态，确认预览证据路径存在；不解读证据像素，也不证明实际看过。固定依赖、单 worker 和可 seek 时间线便于检查，但不承诺不同硬件字节一致。硬件/软件编码明确选择。
 
-这些是记录和文件检查：验证器不读证据图片来重新判断断言，不检查图片内容与所报时间是否相符，不证明音频内容来源，也不自动调用计划验证器。因此应先运行计划检查，再制作、看帧、生成清单，最后验收。检查报告是审查线索，不是视觉正确性的数学证明。
+[validate_master.mjs](../scripts/validate_master.mjs) 检查元数据及音轨时长，容差三帧；报告明确 scope=technical，视觉未被此程序评估。连续观看与实际试听是另外的真实审查任务。目前没有签名审批或整工程哈希绑定。
 
-## 可复现的最小证据
-
-从仓库根目录运行：
+## 复现
 
 ```bash
 python3 examples/plan-validation/run.py
 python3 -m unittest discover -s tests -v
-node scripts/render_master.mjs --help
-node scripts/validate_master.mjs --help
+python3 -m unittest discover -s scripts/tests -v
+node --test tests/*.test.mjs
+python3 examples/audio-only-smoke/run.py --output-dir /tmp/motiontalk-fresh-smoke --render
 ```
 
-[合成样例](../examples/plan-validation/README.md)只检查计划契约，不读取媒体、不调用模型、不下载依赖。现有测试覆盖审批、时间线、Prompt 与渲染接口等契约；它们不等于完整生产渲染或视觉质量评估。README 的四个图像是已有视觉证据，仓库没有随附对应的完整源视频与渲染工程。
+最后一条命令用合成声音与作者编写时间戳，不调用云 ASR、不用私人录音。需要固定依赖、FFmpeg、本机 Chrome。只验证纯音频工程可渲染，不证明真实 ASR 准确率、自然气口判断、创意质量或耗时成本收益。见 [迁移说明](audio-first-migration.md)。
 
-## 可以迁移的工程思路
+可迁移的思路是清楚的决定记录、窄的确定性门禁与独立评估的 Agent 判断，可用于 Work、Robotics、Finance 的探索；本媒体案例不代表企业部署、机器人能力、金融绩效或 ROI。
 
-在 Work 中，可把“总结正确”拆成输入来源、断言证据与可编辑交付。在 Robotics 或 Finance 中，规划、审批与证据的分层值得探索，但还需要各自的安全约束、环境反馈与领域评估。这个媒体案例没有验证机器人部署、金融系统表现或企业 ROI。
-
-使用与改编遵循 [CC BY-NC-SA 4.0](../LICENSE.md)；商业使用需事先获得书面许可，第三方材料保留各自权利。
+[非商业许可](../LICENSE.md) 未改，商业用途需事先书面授权；第三方材料保留自身权利。

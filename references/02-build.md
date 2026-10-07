@@ -1,40 +1,25 @@
-# 批准后制作
+# 音频驱动的视觉制作
 
-前提：导演脚本和 placement plan 已批准。
+```bash
+node <skill-root>/scripts/init_project.mjs --project-dir "$output_dir/hyperframes" --plan "$plan"
+```
 
-## 建立项目
+输入无需视频流。初始化主音频、内部字幕、可 seek 的 GSAP composition 和 project-state.json，只是 scaffold。按导演计划实际制作视觉故事，不把默认标题卡当成完整创作。
 
-在 `output_dir/remotion/` 创建最小 Remotion 项目，只实现批准版 Prompt 需要的
-组件。画布、帧率、包装、字体、人物布局、MG 和动画均**由批准版导演计划决定**；
-不要复制 Skill 模板，也不要为未使用的构图预建代码分支。
+根画布直接位于 body，明确尺寸与时长；唯一主音频有唯一 id，可选视频/B-roll 默认静音避免音轨重复。DOM/SVG 字幕和图形保证中文可读性、留白与安全区。视觉随论证推进，数据必须真实，示意关系应明确标注。
 
-保持以下薄接口：
+时段用 clip/data-start/data-duration，Hyperframes 控制媒体；暂停动画注册到 window.__timelines.master，不自行播放/seek 媒体，不使用 CSS keyframes、系统时钟或网络字体。可选 [组件](06-modern-components.md) 安装前核对来源与许可。
 
-- composition ID 为 `MasterComposition`；
-- 入口为 `src/index.ts`，静态素材位于 `public/`；
-- `master-props.json` 含 `durationInFrames`、与计划一致的 `renderSpec`，以及
-  当前项目需要的字幕、章节、素材和 cue 数据；
-- 输入视频承载唯一主音频；正式文字直接由 DOM/SVG 渲染。
+```bash
+node <skill-root>/scripts/hf.mjs lint "$output_dir/hyperframes"
+node <skill-root>/scripts/hf.mjs preview "$output_dir/hyperframes"
+```
 
-使用相对坐标、响应式 CSS 或 `renderSpec` 计算几何。项目代码可以针对批准画面
-写具体位置，但 Skill 脚本和文档中不得沉淀该项目的尺寸常量。
+连续预览覆盖开头、转场、密集内容和结尾；截图抽查不等于连续观看。核对字幕同步并实际试听；未执行就标 pending。完成制作后记录真实证据：
 
-若批准计划引用参考主题，读取
-[04-reference-theme-prompt.md](04-reference-theme-prompt.md)，只复用相关视觉关系和
-证据门禁；当前自然语言要求与参考主题冲突时，以批准计划为准。只实现本项目实际
-使用的组件，不创建全局主题开关或四套预制分支。
+```json
+{"status":"ready","input":"audio","needs_visual_production":false,
+ "visual_review":{"scope":"continuous","evidence":["preview-review.md"]}}
+```
 
-## 证据帧
-
-先运行 `validate_plan.py`，再用 `render_master.mjs --still` 从同一
-MasterComposition 输出：
-
-- 开头、中段、结尾；
-- 每个 cue 的 proof moment；
-- 每个布局或素材切换边界。
-
-逐帧确认语义、遮挡、人物比例、字体清晰度、字幕和批准包装。写入
-`semantic-checklist.v1.json`、`aspect-occlusion-checklist.v1.json` 和
-`package-checklist.v1.json`。
-
-全部通过后立即读取并执行 [03-deliver.md](03-deliver.md)，不得停下或再次等待用户确认。
+证据说明实际看过的时段、问题与修订，不能伪造。渲染器检查状态记录，不验证证据内容真假。随后按 [交付](03-deliver.md) 继续。

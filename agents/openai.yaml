@@ -1,4 +1,4 @@
 interface:
   display_name: "MotionTalk"
-  short_description: "用导演 Prompt 驱动口播视频 MG 与成片包装"
-  default_prompt: "Use $motiontalk with my edited talking video, final matching SRT, and output directory to create and execute a project-specific director plan."
+  short_description: "从音频到完整社交视频：转写、可选气口剪辑与视觉制作"
+  default_prompt: "Use $motiontalk with my audio and optional material folder. Ask whether to trim breath gaps, resolve the creative brief progressively, and create a complete social video."

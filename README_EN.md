@@ -1,117 +1,99 @@
-[简体中文](README.md) | [English](README_EN.md)
+[English home](README.md) · [简体中文](README.zh-CN.md)
 
 # MotionTalk
 
-Give an edited video and its final SRT to Codex, Kimi, or Claude Code, then say
-a few words about the result you want. MotionTalk reads the content, proposes a
-director plan, and completes production after one approval.
+**From your audio recording to a complete social video.**
 
-## Just tell the Agent what you want
+Bring an audio file, optionally a folder of materials. MotionTalk handles transcription and matching subtitles internally, asks whether you want selective breath-gap trimming, develops the visual story with you, and produces an MP4 through Hyperframes. No presenter video or user-prepared SRT is required.
 
-You do not need to understand video engineering or fill in complex parameters.
-Give the assets to Codex / Kimi / Claude Code and describe the result as if you
-were talking to an editor: landscape or portrait, presenter placement, PPT or
-screen recording, caption feel, and any animation you want.
+[Get started](#quickstart) · [Creator work](#creator-work) · [工程案例](docs/harness-case-study.md)
 
-**Give the Agent your video and subtitles, then describe the result → The Agent
-proposes a director plan → Receive the final video → Optional adjustments**
+Non-commercial use under [CC BY-NC-SA 4.0](LICENSE.md). Commercial use requires prior written permission. Third-party materials keep their own licenses.
 
-![MotionTalk workflow: describe the desired result, review the director plan, receive the final video, and adjust if needed](assets/readme/motiontalk-flow-en.png)
+## Quickstart
 
-For example:
-
-```text
-Use MotionTalk for this video and its subtitles. Switch or interweave the
-presenter, full-screen MG, and other video B-roll wherever you think it best
-serves the content.
-```
-
-After approval, the Agent completes production, checks the result, and delivers
-the final video. Stop when it feels right, or describe any adjustments in plain
-language.
-
-## First run
-
-1. Inspect the four [existing visual samples](#reference-themes) below. They show visual directions, not complete runnable example projects.
-2. Prepare a decodable, already-edited video and its final matching SRT. For raw recordings, start with [clean-talking-video](https://github.com/PoetCoderJun/clean-talking-video); MotionTalk does not transcribe or recut.
-3. [Install the Skill](#install), then provide both paths and an isolated output directory:
-
-```text
-Use $motiontalk with:
-- video: /data/edited-video.mp4
-- subtitles: /data/final-clean.srt
-- output_dir: /work/motiontalk-demo
-Use floating-overlay as a reference. Let me review the director plan before approving production.
-```
-
-The Agent first delivers a readable director script and a machine plan. Production starts only after explicit approval of the current plan; “use your judgment” authorizes a draft. Changes to inputs, timeline, copy or frozen visual direction require replanning and approval. Delivery includes the packaged video, director script, plan and quality report.
-
-To inspect the engineering without media or model calls, run the [synthetic plan example](examples/plan-validation/README.md). It demonstrates valid, unapproved and gapped plans; it is not a rendered-video demo.
-
-## Reference themes
-
-The four effects below are starting points in one standalone reference prompt.
-Naming one can quickly produce a similar video, but they are not a required
-four-way choice or the boundary of MotionTalk. Describe the desired layout,
-captions, presenter, screen recording, or animation directly in natural
-language whenever you want a different result. Every frame is from a real local
-delivery.
-
-<table>
-  <tr>
-    <td width="50%"><img src="assets/readme/theme-floating-overlay.webp" alt="Full-screen presenter with floating MG sample"><br><strong>1. floating-overlay</strong><br><sub>Keep the presenter or recording full-screen and add only lightweight MG in safe zones.</sub></td>
-    <td width="50%"><img src="assets/readme/theme-presenter-window.webp" alt="Full-screen MG with presenter window sample"><br><strong>2. mg-with-presenter-window</strong><br><sub>Make MG, screenshots, or recordings primary while the presenter remains in a circle or rectangle.</sub></td>
-  </tr>
-  <tr>
-    <td width="50%"><img src="assets/readme/theme-switching.webp" alt="Presenter and screen recording switching sample"><br><strong>3. switching</strong><br><sub>Switch between presenter, full-screen MG, and recordings so each state stays readable.</sub></td>
-    <td width="50%"><img src="assets/readme/theme-ppt-focus-portrait.webp" alt="Portrait PPT focus sample"><br><strong>4. PPT Focus Portrait</strong><br><sub>Use PPT as the portrait primary visual, with self-fitting captions below, a bottom-right presenter, and progress.</sub></td>
-  </tr>
-</table>
-
-All four guides live in
-[`references/04-reference-theme-prompt.md`](references/04-reference-theme-prompt.md).
-The prompt only helps the Agent understand a direction faster; the final plan
-still follows the current assets and natural-language request.
-
-## Core capabilities
-
-- **Understand before designing**: the Agent reads the full video and subtitles
-  instead of adding random effects;
-- **One approval, continuous delivery**: after the director plan is approved,
-  production continues without repeated interruptions;
-- **Designed for each video**: visuals follow the content and your request, not
-  a fixed template;
-- **Checked before delivery**: captions, presenter proportions, occlusion,
-  source matching, and the final video are reviewed;
-- **Reference-theme prompt**: align quickly with four real examples, or skip
-  themes entirely and design the current project in natural language.
-
-## Install
+Install the Skill in an Agent that can read local files/images and run commands:
 
 ```bash
 npx skills add PoetCoderJun/MotionTalk
 ```
 
+```text
+Use $motiontalk with /data/my-audio.wav.
+I want a complete social video explaining the ideas in my recording.
+Optional materials: /data/materials.
+```
+
+If you have not said whether to trim breath gaps, the Agent asks first. If yes, it listens and selects suitable gaps, compressing only those gaps to 0.25 seconds by default. If no, it preserves the original timeline. Word gaps are not automatically classified as breaths; fillers, mistakes and retakes are not removed without separate instructions.
+
+The Agent progressively resolves the publishing format, creative idea, optional materials, visual style and optional reference videos. None of the optional inputs is required. Review the director plan before production, or explicitly authorize an unattended run. Publishing remains your action.
+
+## What you get
+
+- A complete MP4 with the spoken story, visual explanation and pacing designed together.
+- Prepared audio and matching internal SRT, with a sample-based edit report.
+- A reviewable director plan, editable HTML/CSS/GSAP project and technical delivery report.
+
+The initializer creates a scaffold; the Agent still has to produce and inspect the visual story. A few title cards or a successful render do not establish creative quality.
+
+## Creator work
+
+> “I use MotionTalk for all of my recent Xiaohongshu videos.” — Jun, its author and creator
+
+[Watch Jun’s recent videos](https://www.xiaohongshu.com/user/profile/5b40fe744eacab72c9f480ef). This is an author statement; it does not identify which runtime version made each video. Local manuscripts are not bundled or publicly hosted by this repository.
+
+## Setup and data path
+
+Python 3.10+, FFmpeg/ffprobe, Node >=22 and a local full Google Chrome are required. In the installed Skill directory, install the reviewed dependencies:
+
+```bash
+python3 -m pip install -r requirements.txt
+npm ci
+```
+
+The lockfile pins Hyperframes 0.8.30 and GSAP 3.14.2. The built-in DashScope ASR needs service configuration (including DASHSCOPE_API_KEY) and explicit upload/charge authorization. It uploads an audio proxy to the service, polls an asynchronous task and retrieves the result; it is not offline ASR. Local rendering does not make the entire workflow local. The selected Agent’s own data handling also applies. See [audio preparation](references/00-audio.md).
+
+Hardware H.264 and one worker are the default. An explicit software mode is available when hardware support is unsuitable; runtime and browser downloads are not automatic. Optional external assets/components need source and license checks.
+
 ## Checks and limitations
 
-Scripts check plan approval flags, timeline continuity, output dimensions / frame rate / duration, audio codec, and evidence files and statuses in checklists. The Agent still inspects frames for meaning, proportions, occlusion and packaging. Passing checks does not establish automated visual understanding or correctness of every frame.
+Transcription can mishear words or timestamps. Selective gap edits depend on listening review and usable word timings; they are not an automatic breath detector. Direct splicing can need manual boundary refinement. The no-trim path preserves timing while normalizing the audio container/sample rate.
 
-Approval is a field in the plan, not a signature or input-hash binding. Returning to planning after input changes is a workflow rule. Sampled frames can miss brief defects; output validation also does not prove sample-for-sample identity of the source audio. Missing dependencies, assets or evidence should stop delivery with an explanation.
+Technical scripts check structure, sample-based editing, subtitle remapping, dimensions, codecs and audio/video duration. Continuous visual review and actual listening are separate. Approval/state fields are workflow records, not authenticated signatures. The renderer checks the recorded review state, not the truth of the evidence. No customers, deployment metrics, timing or cost savings are claimed.
 
-Full production requires an Agent that can read files and images and execute commands, Python 3, Node.js/npm, and compatible Remotion packages installed in the generated project. The first render may download dependencies and a browser; installing the Skill does not install the full rendering environment. Rendering runs locally, while the chosen Agent service may still process assets. Model charges, performance and turnaround depend on the environment; this repository provides no cost or timing guarantee.
+## Engineering and local checks
 
-For engineering details, read the [Harness case study and code boundaries](docs/harness-case-study.en.md).
-
-## Development
+Read the [Harness case study](docs/harness-case-study.en.md) for the code’s current gates and limits. Run after installing the pinned dependencies:
 
 ```bash
 python3 -m unittest discover -s tests -v
-node scripts/render_master.mjs --help
-node scripts/validate_master.mjs --help
+python3 -m unittest discover -s scripts/tests -v
+node --test tests/*.test.mjs
+python3 examples/plan-validation/run.py
 ```
 
-## License
+Tests use synthetic input/mock service results and do not call cloud models. A synthetic audio-only rendering smoke test is documented in [the example](examples/audio-only-smoke/README.md); it is a technical check, not a creator showcase.
 
-Original repository material is available under
-[CC BY-NC-SA 4.0](LICENSE.md) for non-commercial use. Commercial use requires
-separate written permission.
+## Compatibility and licenses
+
+[clean-talking-video](https://github.com/PoetCoderJun/clean-talking-video) remains operational for the existing video-editing workflow. [dingtalk-style-minutes](https://github.com/PoetCoderJun/dingtalk-style-minutes) keeps its existing clean-talking-video dependency. Neither repository is archived or removed by this integration.
+
+See [migration notes](docs/audio-first-migration.md) and [third-party notices](THIRD_PARTY_NOTICES.md). The root license is unchanged; commercial use requires separate prior written permission.
+
+<!-- Compatibility anchors for previously published links. -->
+<a id="checks-and-limitations"></a>
+<a id="core-capabilities"></a>
+<a id="development"></a>
+<a id="first-run"></a>
+<a id="install"></a>
+<a id="just-tell-the-agent-what-you-want"></a>
+<a id="license"></a>
+<a id="reference-themes"></a>
+<a id="参考主题"></a>
+<a id="和-ai-说几句话就行"></a>
+<a id="安装"></a>
+<a id="开发验证"></a>
+<a id="核心能力"></a>
+<a id="检查与限制"></a>
+<a id="第一次使用"></a>
+<a id="许可"></a>

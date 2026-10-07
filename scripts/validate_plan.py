@@ -5,13 +5,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 
 def _positive_number(container: dict, key: str, prefix: str, errors: list[str]):
     try:
         value = float(container[key])
-        if value <= 0:
+        if not math.isfinite(value) or value <= 0:
             raise ValueError
         return value
     except (KeyError, TypeError, ValueError):
@@ -25,21 +26,6 @@ def _required_prompt(plan: dict, key: str, errors: list[str]) -> None:
         errors.append(f"{key} must be a non-empty approved prompt")
 
 
-def _validate_invariants(cue: dict, errors: list[str]) -> None:
-    cue_id = cue.get("id", "<unknown>")
-    invariants = cue.get("spec", {}).get("semantic_invariants")
-    if not isinstance(invariants, list) or not invariants:
-        errors.append(f"{cue_id}: semantic_invariants missing")
-        return
-    for invariant in invariants:
-        invariant_id = invariant.get("id", "<unknown>")
-        for key in ("id", "assertion", "proof_moment"):
-            if invariant.get(key) in (None, ""):
-                errors.append(f"{cue_id}/{invariant_id}: {key} is required")
-        if not isinstance(invariant.get("forbidden"), list):
-            errors.append(f"{cue_id}/{invariant_id}: forbidden must be a list")
-
-
 def validate(plan: dict) -> list[str]:
     errors: list[str] = []
     if plan.get("status") != "approved" or plan.get("approved") is not True:
@@ -49,11 +35,9 @@ def validate(plan: dict) -> list[str]:
     if not isinstance(source, dict):
         errors.append("source is required")
         source = {}
-    for key in ("video", "subtitles"):
+    for key in ("audio", "subtitles"):
         if not source.get(key):
             errors.append(f"source.{key} is required")
-    for key in ("width", "height", "fps"):
-        _positive_number(source, key, "source", errors)
     source_duration = _positive_number(
         source, "duration_seconds", "source", errors
     )
@@ -68,6 +52,19 @@ def validate(plan: dict) -> list[str]:
         if key == "fps":
             render_fps = value
 
+    preparation = plan.get("audio_preparation")
+    if not isinstance(preparation, dict):
+        preparation = {}
+    if preparation.get("trim_breaths") not in ("yes", "no"):
+        errors.append("audio_preparation.trim_breaths requires explicit yes/no")
+    brief = plan.get("creative_brief")
+    if not isinstance(brief, dict):
+        brief = {}
+    for key in ("layout", "idea", "materials", "style"):
+        if not isinstance(brief.get(key), str) or not brief[key].strip():
+            errors.append(f"creative_brief.{key} must be resolved before production")
+    if not isinstance(brief.get("references", []), list):
+        errors.append("creative_brief.references must be a list (may be empty)")
     _required_prompt(plan, "visual_direction", errors)
     _required_prompt(plan, "package_direction", errors)
 
@@ -78,11 +75,13 @@ def validate(plan: dict) -> list[str]:
 
     frame_ranges = []
     for cue in cues:
+        if not isinstance(cue, dict):
+            errors.append("cue must be an object")
+            continue
         cue_id = cue.get("id", "<unknown>")
         visual_prompt = cue.get("visual_prompt")
         if not isinstance(visual_prompt, str) or not visual_prompt.strip():
             errors.append(f"{cue_id}: visual_prompt is required")
-        _validate_invariants(cue, errors)
         try:
             start_seconds = float(cue["start_seconds"])
             end_seconds = float(cue["end_seconds"])
@@ -97,7 +96,7 @@ def validate(plan: dict) -> list[str]:
                 errors.append(f"{cue_id}: end_seconds is not on render fps frame grid")
             if end_frame <= start_frame:
                 errors.append(f"{cue_id}: end_seconds must be after start_seconds")
-        except (KeyError, TypeError, ValueError):
+        except (KeyError, TypeError, ValueError, OverflowError):
             errors.append(f"{cue_id}: start_seconds/end_seconds must be numbers")
 
     if frame_ranges and frame_ranges[0][1] != 0:

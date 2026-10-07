@@ -14,7 +14,7 @@ REJECT: unapproved draft
 REJECT: timeline gap
 ```
 
-这是新写的合成契约输入，不包含真实录音、客户数据或媒体。`plan.json` 的批准字段仅模拟测试状态，不能用作真实项目的用户批准。视频与字幕路径是不存在的占位符；验证器不检查文件存在，因此这个样例通过也不能用于成片交付。
+这是新写的合成契约输入，不包含真实录音、客户数据或媒体。`plan.json` 的批准字段仅模拟测试状态，不能用作真实项目的用户批准。音频与字幕路径是不存在的占位符；验证器不检查文件存在，因此这个样例通过也不能用于成片交付。
 
 This newly authored synthetic fixture contains no real recordings, customer data or media. Approval flags simulate a test state and must never substitute for user approval in a real project. Media paths are nonexistent placeholders: this validator does not check file existence, so passing this example does not qualify a video for delivery.
 
