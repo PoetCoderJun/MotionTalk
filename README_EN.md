@@ -30,6 +30,24 @@ After approval, the Agent completes production, checks the result, and delivers
 the final video. Stop when it feels right, or describe any adjustments in plain
 language.
 
+## First run
+
+1. Inspect the four [existing visual samples](#reference-themes) below. They show visual directions, not complete runnable example projects.
+2. Prepare a decodable, already-edited video and its final matching SRT. For raw recordings, start with [clean-talking-video](https://github.com/PoetCoderJun/clean-talking-video); MotionTalk does not transcribe or recut.
+3. [Install the Skill](#install), then provide both paths and an isolated output directory:
+
+```text
+Use $motiontalk with:
+- video: /data/edited-video.mp4
+- subtitles: /data/final-clean.srt
+- output_dir: /work/motiontalk-demo
+Use floating-overlay as a reference. Let me review the director plan before approving production.
+```
+
+The Agent first delivers a readable director script and a machine plan. Production starts only after explicit approval of the current plan; “use your judgment” authorizes a draft. Changes to inputs, timeline, copy or frozen visual direction require replanning and approval. Delivery includes the packaged video, director script, plan and quality report.
+
+To inspect the engineering without media or model calls, run the [synthetic plan example](examples/plan-validation/README.md). It demonstrates valid, unapproved and gapped plans; it is not a rendered-video demo.
+
 ## Reference themes
 
 The four effects below are starting points in one standalone reference prompt.
@@ -73,6 +91,16 @@ still follows the current assets and natural-language request.
 ```bash
 npx skills add PoetCoderJun/MotionTalk
 ```
+
+## Checks and limitations
+
+Scripts check plan approval flags, timeline continuity, output dimensions / frame rate / duration, audio codec, and evidence files and statuses in checklists. The Agent still inspects frames for meaning, proportions, occlusion and packaging. Passing checks does not establish automated visual understanding or correctness of every frame.
+
+Approval is a field in the plan, not a signature or input-hash binding. Returning to planning after input changes is a workflow rule. Sampled frames can miss brief defects; output validation also does not prove sample-for-sample identity of the source audio. Missing dependencies, assets or evidence should stop delivery with an explanation.
+
+Full production requires an Agent that can read files and images and execute commands, Python 3, Node.js/npm, and compatible Remotion packages installed in the generated project. The first render may download dependencies and a browser; installing the Skill does not install the full rendering environment. Rendering runs locally, while the chosen Agent service may still process assets. Model charges, performance and turnaround depend on the environment; this repository provides no cost or timing guarantee.
+
+For engineering details, read the [Harness case study and code boundaries](docs/harness-case-study.en.md).
 
 ## Development
 

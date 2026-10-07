@@ -1,0 +1,58 @@
+{
+  "example_only": true,
+  "status": "approved",
+  "approved": true,
+  "source": {
+    "video": "synthetic-placeholder.mp4",
+    "subtitles": "synthetic-placeholder.srt",
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "duration_seconds": 2
+  },
+  "render_spec": {
+    "width": 640,
+    "height": 360,
+    "fps": 30
+  },
+  "visual_direction": "Synthetic contract example: show A then B. No media is bundled.",
+  "package_direction": "Show a readable label for each synthetic cue.",
+  "cues": [
+    {
+      "id": "cue-a",
+      "start_seconds": 0,
+      "end_seconds": 1,
+      "visual_prompt": "Display synthetic label A.",
+      "spec": {
+        "semantic_invariants": [
+          {
+            "id": "label-a",
+            "assertion": "Label A is visible.",
+            "proof_moment": 0.5,
+            "forbidden": [
+              "wrong label"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "cue-b",
+      "start_seconds": 1,
+      "end_seconds": 2,
+      "visual_prompt": "Display synthetic label B.",
+      "spec": {
+        "semantic_invariants": [
+          {
+            "id": "label-b",
+            "assertion": "Label B is visible.",
+            "proof_moment": 1.5,
+            "forbidden": [
+              "wrong label"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
