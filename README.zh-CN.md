@@ -31,9 +31,21 @@ npx skills add PoetCoderJun/MotionTalk
 
 交付完整 MP4、准备音频与内部 SRT、采样区间剪辑报告、导演计划、可编辑 HTML/CSS/GSAP 工程及技术检查报告。初始化生成的是 scaffold，仍需实际视觉制作；几张标题卡与渲染成功不等于创意验收。
 
-> “我最近的小红书视频都是用 MotionTalk 制作的。”——作者 Jun
+### Vibe Working：图解与屏幕演示
 
-[观看作者近期作品](https://www.xiaohongshu.com/user/profile/5b40fe744eacab72c9f480ef)。这是作者陈述，不代表逐条核验了运行时版本。本地稿件不随仓库公开托管。
+![作者既有成片：工作流程图、人物和屏幕演示，6倍速](assets/examples/vibe-working-6x.gif)
+
+摘取《每一个没Vibe Working过的好朋友我都跟她急》**00:39–01:27**，以 **6 倍速**展示，约 8 秒。
+
+### 具身话题：随论证展开的图解
+
+![作者既有具身话题成片：图解逐步展开，配合字幕与人物画中画，6倍速](assets/examples/embodied-correction-6x.gif)
+
+摘取《具身智能-数采纠正-清晰人声版》**最后 30 秒**，以 **6 倍速**展示，约 5 秒。
+
+以上为作者既有成片的无声 GIF 摘录，不是本次音频优先版本的端到端验证。
+
+**[更多示例视频 · 小红书「诗人程序员Jun.AI」](https://www.xiaohongshu.com/user/profile/5b40fe744eacab72c9f480ef)**
 
 ## 环境、数据与限制
 

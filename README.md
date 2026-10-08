@@ -38,9 +38,21 @@ The initializer creates a scaffold; the Agent still has to produce and inspect t
 
 ## Creator work
 
-> “I use MotionTalk for all of my recent Xiaohongshu videos.” — Jun, its author and creator
+### Vibe Working: visual explanations and screen demonstrations
 
-[Watch Jun’s recent videos](https://www.xiaohongshu.com/user/profile/5b40fe744eacab72c9f480ef). This is an author statement; it does not identify which runtime version made each video. Local manuscripts are not bundled or publicly hosted by this repository.
+![Existing creator video showing animated workflow diagrams, a presenter and a screen demonstration at 6× speed](assets/examples/vibe-working-6x.gif)
+
+00:39–01:27 from Jun’s existing Vibe Working video, condensed to about 8 seconds at **6× speed**.
+
+### Embodied AI: diagrams that follow the argument
+
+![Existing embodied-AI explainer showing progressive diagrams, captions and a presenter at 6× speed](assets/examples/embodied-correction-6x.gif)
+
+The final 30 seconds of Jun’s existing embodied-AI explainer, condensed to about 5 seconds at **6× speed**.
+
+These silent GIFs are excerpts from the author’s existing finished videos, not end-to-end validation of this audio-first version.
+
+**[More example videos · 诗人程序员Jun.AI on Xiaohongshu](https://www.xiaohongshu.com/user/profile/5b40fe744eacab72c9f480ef)**
 
 ## Setup and data path
 
